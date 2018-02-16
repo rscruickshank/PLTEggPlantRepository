@@ -1,0 +1,25 @@
+﻿(*
+Function - Case_Europe_iPhone6S_Safari_Guest_Product_AddUnsizedItemToBag
+Author - Rory Cruickshank
+Date - 04/07/2017
+Purpose - Navigate to Tops and add an item to the shopping bag
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile", "Europe"
+
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+//Navigate to Beauty
+run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Accessories", "NavBarAccessoriesMobile/lk_Beauty", "NavigationLandingPagesMobile/t_Beauty", "Beauty header"
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", , , numberOfItems
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

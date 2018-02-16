@@ -1,0 +1,21 @@
+﻿{
+    CaptureDate = "2017-06-30 07:49:51 +0000";
+    CaptureHost = "LT08008 : Edinburgh iPhone 6S";
+    CaptureScreenSize =     (
+        750,
+        1334
+    );
+    CropRectangle = "0,0,109,47";
+    HasAlpha = 1;
+    HotSpotX = 93;
+    HotSpotY = 84;
+    ImageDescription = <>;
+    LastKnownLocationX = 0;
+    LastKnownLocationY = 0;
+    OriginalLocationX = 18;
+    OriginalLocationY = 494;
+    Precise = 0;
+    Pulsing = 0;
+    Scale = 1;
+    SearchAlgorithm = TextSmoothSquare;
+}

@@ -1,0 +1,33 @@
+﻿(*
+Function - Case_NewZealand_iPhone6S_Safari_LoginAtStart_Bag_IncreaseItems
+Author - Rory Cruickshank
+Date - 05/07/2017
+Purpose - Add items to the shopping bag, then amend the total number of items in the bag
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile", "New Zealand"
+
+//Navigate to the Register page and check that it has been found
+Tap "NavBarMobile/bt_BurgerMenu"
+run Utils_Utilities.CheckForImage "NavBarMobile/bt_LoginSignUp", "Login/Sign Up button"
+Click "NavBarMobile/bt_LoginSignUp"
+//Log in
+run Mthds_RegisterPage.RegistrationPageMobile "iPhone", "Login", , , "testNZ@email.com", , , , , , "P@ssw0rd", "P@ssw0rd"
+//Navigate to Tops and select the first item
+run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Clothing", "NavBarClothingMobile/lk_TopsFrom4", "NavigationLandingPagesMobile/t_Topsfrom4Header", "Tops header"
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", 10,16, numberOfItems
+set numberOfItems to the result
+//Navigate to shopping bag and increase the first item by one
+run Mthds_ShoppingBag.IncreaseOrDecreaseItemsMobile numberOfItems, "Increase", "First Item", 0
+set numberOfItems to the result
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

@@ -1,0 +1,40 @@
+﻿(*
+Function - AddAnItem
+Author - Rory Cruickshank
+Date - 30/05/2017
+Purpose - Add an item to the shopping bag
+Arguments - device, size, numberOfItems
+Returns - numberOfItems
+*) 
+to AddAnItem device, size, largestSize, numberOfItems
+	Start using Omega13
+	//Check which device we are using
+	if device = "iPhone" then
+		//Click on the first item on the page and check that the page has loaded 
+		Tap "AddItemsToBagMobile/bt_ToggleNumberOfItems"
+		run Utils_Utilities.ScrollUntilFound "Up", "AddItemsToBagMobile/bt_AddToBag", "Add to bag button", 5, "Log"
+		//Check if this is a sized item
+		If size.length > 0 then
+			//Select the required size
+			DoubleTap "AddItemsToBagMobile/bt_ChooseClothesSize"
+			run Utils_Utilities.SelectFromDropdown device, size, largestSize, "Up", 2, 814, 750, 1334
+		End If
+		//Add the item to the bag and increment numberOfItems
+		DoubleTap "AddItemsToBagMobile/bt_AddToBag"
+		//Wait to allow the bag to update
+		Wait 5
+	else if device = "Tablet" then
+		//Click on the first item on the page and check that the page has loaded 
+		Tap "AddItemsToBagTablet/t_RefinersHeader"
+		run Utils_Utilities.CheckForImage "AddItemsToBagTablet/bt_AddToBag", "Add to bag button"
+		If size.length > 0 then
+			//Select the required size
+			run Utils_Utilities.SelectInputValue "Size", size, "AddItemsToBagTablet/r_Sizes_A", "AddItemsToBagTablet/r_Sizes_B"
+		end if
+		//Add the item to the bag and increment numberOfItems
+		Tap "AddItemsToBagTablet/bt_AddToBag"
+	end if
+	Set numberOfItems to numberOfItems +1
+	Stop using Omega13
+	return numberOfItems
+end AddAnItem

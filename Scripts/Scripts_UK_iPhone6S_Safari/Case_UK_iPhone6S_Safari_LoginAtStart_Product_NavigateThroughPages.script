@@ -1,0 +1,23 @@
+﻿(*
+Function - Case_UK_iPhone6S_Safari_LoginAtStart_Product_NavigateThroughPages
+Author - Rory Cruickshank
+Date - 26/06/2017
+Purpose - Load the homepage and check all of the navigation links
+Arguments - 
+Returns - 
+*)
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile"
+
+//Navigate to the Register page and check that it has been found
+Tap "NavBarMobile/bt_BurgerMenu"
+run Utils_Utilities.CheckForImage "NavBarMobile/bt_LoginSignUp", "Login/Sign Up button"
+Click "NavBarMobile/bt_LoginSignUp"
+run Mthds_RegisterPage.RegistrationPageMobile "iPhone", "Login", , , "test@email.com", , , , , , "P@ssw0rd", "P@ssw0rd"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

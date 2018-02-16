@@ -1,0 +1,258 @@
+﻿(*
+Function - RegistrationPageTablet
+Author - Rory Cruickshank
+Date - 24/05/2017
+Purpose - Handle expected elements on all sections of the Register page
+Arguments - firstName, lastName, birthDate, birthMonth, birthYear, studentStatus, telephone, country, postcode, addressFinder, streetAddress1, streetAddress2, city, receiveOffers, emailAddress, password, confirmPassword, region
+Returns - 
+*)
+to RegistrationPageTablet device, firstName, lastName, birthDate, birthMonth, birthYear, studentStatus, telephone, country, postcode, addressFinder, streetAddress1, streetAddress2, city, receiveOffers, emailAddress, password, confirmPassword, region
+	Start using Omega13
+	run Utils_Utilities.CheckForImage "RegisterPageTablet/t_RegisterPageHeader", "Register page header"
+	//Input data in the Personal Information fields
+	run Mthds_RegisterPage.PersonalInformationTablet device, firstName, lastName, birthDate, birthMonth, birthYear, studentStatus
+	//Input data in the Address Information fields
+	run Mthds_RegisterPage.AddressInformationTablet device, telephone, country, postcode, addressFinder, streetAddress1, streetAddress2, city, receiveOffers, region
+	//Input data in the Login Information fields
+	run Mthds_RegisterPage.LoginInformationTablet device, emailAddress, password, confirmPassword
+	Tap "RegisterPageTablet/bt_CreateAnAccount"
+	//Check which device we're using
+	if device = "iPad" then
+		Tap "iOSPasswordOptions/bt_NeverForThisSite"	
+	end if
+	run Utils_Utilities.CheckForImage "RegisterPageTablet/t_WelcomeText", "Registration welcome text"
+	Stop using Omega13
+end RegistrationPageTablet
+
+(*
+Function - RegistrationPageMobile
+Author - Rory Cruickshank
+Date - 25/05/2017
+Purpose - Handle expected elements on all sections of the Register page
+Arguments - firstName, lastName, emailAddress, birthDate, birthMonth, birthYear, telephone, receiveOffers, password, confirmPassword
+Returns - 
+*)
+to RegistrationPageMobile device, registerOrLogin, firstName, lastName, emailAddress, birthDate, birthMonth, birthYear, telephone, receiveOffers, password, confirmPassword
+	Start using Omega13
+	//check that we're on the correct page
+	//run Utils_Utilities.CheckForImage "RegisterPageMobile/t_LoginRegisterHeader", "Login/Register header"
+	//Check if we're registering or logging in
+	If registerOrLogin = "Register" then
+		run Mthds_RegisterPage.RegisterPageMobile device, firstName, lastName, emailAddress, birthDate, birthMonth, birthYear, telephone, receiveOffers, password, confirmPassword
+		//Check which device we're using
+		if device = "iPhone" then
+			Tap "iOSPasswordOptions/bt_NeverForThisSite"
+		end if
+	else if registerOrLogin = "Login" then
+		run Mthds_RegisterPage.LoginPageMobile device, emailAddress, password
+	End If 
+	Stop using Omega13
+end RegistrationPageMobile
+
+(*
+Function - PersonalInformationTablet
+Author - Rory Cruickshank
+Date - 23/05/2017
+Purpose - Handle expected elements on the Personal Information section of the Register page
+Arguments - firstName, lastName, birthDate, birthMonth, birthYear, studentStatus
+Returns - 
+*)
+to PersonalInformationTablet device, firstName, lastName, birthDate, birthMonth, birthYear, studentStatus
+	Start using Omega13
+	//First, check that the section header is displayed
+	run Utils_Utilities.CheckForImage "RegisterPageTablet/t_PersonalInformationHeader", "Personal Information header"
+	//Now input the supplied values in all fields
+	(* These commands don't seem to work when you first try clicking on the field, but work after you've input the last name. Commented out for now.
+
+Tap "RegisterPageTablet/tb_FirstName"
+TypeText firstName
+*)
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_LastName", lastName, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_FirstName", firstName, "iOSKeyboard/SafariCloseKeyboard"	
+	//Input the date of birth
+	Tap "RegisterPageTablet/lb_Day"
+	run Utils_Utilities.SelectFromDropdown device, birthDate, "31", "Up", 26, 69, 664, 1308
+	Tap "RegisterPageTablet/lb_Month"
+	run Utils_Utilities.SelectFromDropdown device, birthMonth, "December", "Up", 26, 180, 664, 1308
+	Tap "RegisterPageTablet/lb_Year"
+	run Utils_Utilities.SelectFromDropdown device, birthYear, "1957", "Up", 215, 67, 846, 1308
+	//Check that the student status is set as expected
+	if studentStatus = "No" then
+		run Utils_Utilities.CheckRadioButton "No", "RegisterPageTablet/rb_StudentNoSelected", "RegisterPageTablet/rb_StudentNoUnselected"
+	else if studentStatus = "Yes" then
+		run Utils_Utilities.CheckRadioButton "Yes", "RegisterPageTablet/rb_StudentYesSelected", "RegisterPageTablet/rb_StudentYesUnselected"
+	end if
+	//Check that the expected information is displayed 
+	run Utils_Utilities.CheckForInputValue "First name", firstName, "RegisterPageTablet/r_PersonalInformation_A", "RegisterPageTablet/r_PersonalInformation_B"
+	run Utils_Utilities.CheckForInputValue "Last name", lastName, "RegisterPageTablet/r_PersonalInformation_A", "RegisterPageTablet/r_PersonalInformation_B"
+	run Utils_Utilities.CheckForInputValue "Birth date", birthDate, "RegisterPageTablet/r_PersonalInformation_A", "RegisterPageTablet/r_PersonalInformation_B"
+	run Utils_Utilities.CheckForInputValue "Birth month", birthMonth, "RegisterPageTablet/r_PersonalInformation_A", "RegisterPageTablet/r_PersonalInformation_B"
+	run Utils_Utilities.CheckForInputValue "Birth year", birthYear, "RegisterPageTablet/r_PersonalInformation_A", "RegisterPageTablet/r_PersonalInformation_B"
+	Stop using Omega13
+end PersonalInformationTablet
+
+(*
+Function - AddressInformationTablet
+Author - Rory Cruickshank
+Date - 24/05/2017
+Purpose - Handle expected elements on the Address Information section of the Register page
+Arguments - telephone, country, postcode, streetAddress1, streetAddress2, city, receiveOffers, region
+Returns - 
+*)
+to AddressInformationTablet device, telephone, country, postcode, addressFinder, streetAddress1, streetAddress2, city, receiveOffers, region
+	Start using Omega13
+	//Check that the header is displayed
+	repeat while not ImageFound("RegisterPageTablet/t_AddressInformationHeader")
+		SwipeDown 
+	end repeat
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_Telephone", telephone, "iOSKeyboard/SafariCloseKeyboard"
+	//Check if the required country is displayed
+	if not ImageFound(5, text: country) then
+		set currentCountry to ReadText("RegisterPageTablet/lb_Country")
+		//Open the listbox and search for our required country
+		Tap "RegisterPageTablet/lb_Country"
+		//Now determine which way we need to scroll to find our country
+		if country comes before currentCountry then
+			run Utils_Utilities.SelectFromDropdown device, country, "Afghanistan", "Down", 799, 77, 1413, 1192
+		else if country comes after currentCountry then
+			run Utils_Utilities.SelectFromDropdown device, country, "Zimbabwe", "Up", 799, 77, 1413, 1192
+		end if
+	end if
+	//Postcode appears at the top of the screen for United Kingdom
+	if country = "United Kingdom" then
+		run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_ZipPostalCode", postcode, "iOSKeyboard/SafariCloseKeyboard"		
+	end if
+	//Check if we're using the Address Finder
+	if country = "United Kingdom" and if addressFinder = "Yes" then
+		Click "RegisterPageTablet/bt_FindAddress"
+		Click "RegisterPageTablet/lb_PleaseSelectYourAddress"
+		//Set the concatenated address
+		Set address to streetAddress1 & ", " & streetAddress2 & ", " & city
+		//Now search for it
+		run Utils_Utilities.SelectFromDropdown device, address, "", "Up", 802, 72, 1416, 1625
+	else
+		//If either of those statements are false, we'll need to manually input the address
+		run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_StreetAddress1", streetAddress1, "iOSKeyboard/SafariCloseKeyboard"
+		run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_StreetAddress2", streetAddress2, "iOSKeyboard/SafariCloseKeyboard"
+		run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_City", city, "iOSKeyboard/SafariCloseKeyboard"
+		//Check if we need to add a Region
+		if region.length >0 then
+			Tap "RegisterPageTablet/lb_StateProvince"
+			run Utils_Utilities.SelectFromDropdown device, region, "", "Up", 802, 172, 1416, 2025
+		end if
+	end if
+	//Postcode appears at the bottom of the screen if not United Kingdom
+	if country <> "United Kingdom" then
+		run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_ZipPostalCode", postcode, "iOSKeyboard/SafariCloseKeyboard"		
+	end if
+	//Check that the Receive Offers checkbox is displayed
+	repeat while not ImageFound(5, "RegisterPageTablet/cb_ReceiveOffers")
+		SwipeUp
+	end repeat
+	run Utils_Utilities.SetElementState "Checkbox", receiveOffers, "RegisterPageTablet/cb_ReceiveOffers/cb_ReceiveOffersSelected", "RegisterPageTablet/cb_ReceiveOffers/cb_ReceiveOffersUnselected"
+	//Check that the expected information is displayed
+	repeat while not ImageFound("RegisterPageTablet/t_AddressInformationHeader")
+		SwipeDown 
+	end repeat
+	run Utils_Utilities.CheckForInputValue "Telephone", telephone, "RegisterPageTablet/r_AddressInformation_A", "RegisterPageTablet/r_AddressInformation_B"
+	run Utils_Utilities.CheckForInputValue "Country", country, "RegisterPageTablet/r_AddressInformation_A", "RegisterPageTablet/r_AddressInformation_B"
+	run Utils_Utilities.CheckForInputValue "Postcode", postcode, "RegisterPageTablet/r_AddressInformation_A", "RegisterPageTablet/r_AddressInformation_B"
+	run Utils_Utilities.CheckForInputValue "Street Address 1", streetAddress1, "RegisterPageTablet/r_AddressInformation_A", "RegisterPageTablet/r_AddressInformation_B"
+	run Utils_Utilities.CheckForInputValue "Street Address 2", streetAddress2, "RegisterPageTablet/r_AddressInformation_A", "RegisterPageTablet/r_AddressInformation_B"
+	run Utils_Utilities.CheckForInputValue "City", city, "RegisterPageTablet/r_AddressInformation_A", "RegisterPageTablet/r_AddressInformation_B"	Stop using Omega13
+end AddressInformationTablet
+
+(*
+Function - LoginInformationTablet
+Author - Rory Cruickshank
+Date - 24/05/2017
+Purpose - Handle expected elements on the login Information section of the Register page
+Arguments - emailAddress, password, confirmPassword
+Returns - 
+*)
+to LoginInformationTablet device, emailAddress, password, confirmPassword
+	Start using Omega13
+	//Input our email address and password
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_EmailAddress", emailAddress, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_Password", password, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageTablet/tb_ConfirmPassword", confirmPassword, "iOSKeyboard/SafariCloseKeyboard"
+	Stop using Omega13
+end LoginInformationTablet
+
+(*
+Function - RegisterPageMobile
+Author - Rory Cruickshank
+Date - 26/05/2017
+Purpose - Handle expected elements on the Register page on mobile
+Arguments - device, firstName, lastName, emailAddress, birthDate, birthMonth, birthYear, telephone, receiveOffers, password, confirmPassword
+Returns - 
+*)
+to RegisterPageMobile device, firstName, lastName, emailAddress, telephone, birthDate, birthMonth, birthYear, receiveOffers, password, confirmPassword
+	Start using Omega13
+	//Set our device variables
+	if device = "iPhone" then
+		Set closeKeyboardButton to "iOSKeyboard/SafariCloseKeyboard"
+	else if device = "Android" then
+		
+	end if
+	//Select the correct tab
+	if imageFound ("RegisterPageMobile/tm_NoImNewHere/tm_NoImNewHereUnselected") then
+		Tap "RegisterPageMobile/tm_NoImNewHere/tm_NoImNewHereUnselected"
+		run Utils_Utilities.CheckForImage "RegisterPageMobile/tm_NoImNewHere/tm_NoImNewHereSelected", "No I'm new here tab"
+	else if ImageFound("RegisterPageMobile/tm_NoImNewHere/tm_NoImNewHereUnselected") then
+		LogWarning "'No I'm new here' tab already selected"
+	end if
+	//Now handle all of the input fields
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_FirstName", firstName, closeKeyboardButton
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_LastName", lastName, closeKeyboardButton
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_EmailAddress", emailAddress, closeKeyboardButton
+	
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_Telephone", telephone, closeKeyboardButton
+	Tap "RegisterPageMobile/lb_BirthYear"	
+	run Utils_Utilities.SelectFromDropdown device, birthYear, "1957", "Up", 2, 814, 750, 1334
+	Tap "RegisterPageMobile/lb_BirthDate"
+	run Utils_Utilities.SelectFromDropdown device, birthDate, "31", "Up", 2, 814, 750, 1334
+	Tap "RegisterPageMobile/lb_BirthMonth"
+	run Utils_Utilities.SelectFromDropdown device, birthMonth, "December", "Up", 2, 814, 750, 1334
+	run Utils_Utilities.CheckForImage "RegisterPageMobile/t_DOBInfoText", "DOB info text"
+	run Utils_Utilities.CheckForImage "RegisterPageMobile/t_ReceiveOffersHeader", "'Receive offers' header"
+	//Check whether Receive Offers is set to Yes or No
+	if receiveOffers.length > 0 then
+		run Utils_Utilities.SetElementState "Checkbox", receiveOffers, "RegisterPageMobile/cb_ReceiveOffers/cb_ReceiveOffersSelected", "RegisterPageMobile/cb_ReceiveOffers/cb_ReceiveOffersUnselected"
+	end if
+	run Utils_Utilities.CheckForImage "RegisterPageMobile/t_ReceiveOffersInfoText"
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_Password", password, closeKeyboardButton
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_ConfirmPassword", confirmPassword, closeKeyboardButton
+	//Click the 'Sign up' button
+	Tap "RegisterPageMobile/bt_SignUpWithEmail"
+	Stop using Omega13
+end RegisterPageMobile
+
+(*
+Function - LoginPageMobile
+Author - Rory Cruickshank
+Date - 26/06/2017
+Purpose - Handle expected elements on the Login page on mobile
+Arguments - device, emailAddress, password
+Returns - 
+*)
+to LoginPageMobile device, emailAddress, password
+	Start using Omega13
+	//Set our device variables
+	if device = "iPhone" then
+		Set closeKeyboardButton to "iOSKeyboard/SafariCloseKeyboard"
+	else if device = "Android" then
+		
+	end if
+	run Utils_Utilities.CheckForImage "RegisterPageMobile/tm_YesIHaveAnAccount", "'Yes i have an account' tab"
+	run Utils_Utilities.SetElementState "Tab", "Yes", "RegisterPageMobile/tm_YesIHaveAnAccount/tm_YesIHaveAnAccountSelected", "RegisterPageMobile/tm_YesIHaveAnAccount/tm_YesIHaveAnAccountUnselected"
+	
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_LoginPassword", password, closeKeyboardButton
+	//Drop a wait here to let the site refresh
+	Wait 3
+	run Utils_Utilities.ScrollUntilFound "Down", "RegisterPageMobile/tb_LoginEmailAddress", "'Email address' textbox", 5, "Log"
+	run Utils_Utilities.TypeAndCloseKeyboard "RegisterPageMobile/tb_LoginEmailAddress", emailAddress, closeKeyboardButton
+	Tap "RegisterPageMobile/bt_LoginWithEmail"
+	run Utils_Utilities.CheckForImage "RegisterPageMobile/t_LoginInfoText", "Login page info text"
+	Stop using Omega13
+end LoginPageMobile

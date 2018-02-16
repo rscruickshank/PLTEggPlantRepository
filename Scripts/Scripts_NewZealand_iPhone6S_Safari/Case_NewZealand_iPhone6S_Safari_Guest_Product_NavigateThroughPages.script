@@ -1,0 +1,22 @@
+﻿(*
+Function - Case_NewZealand_iPhone6S_Safari_Guest_Product_NavigateThroughPages
+Author - Rory Cruickshank
+Date - 05/07/2017
+Purpose - Load the homepage and check all of the navigation links
+Arguments - 
+Returns - 
+*)
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile", "New Zealand"
+
+//Check that the NavBar is displayed as expected for the required device
+run Mthds_CheckNavBar.CheckNavBar "Mobile"
+//Close the navigation menu to prepare for the next step
+Tap "NavBarMobile/bt_CloseBurgerMenu"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

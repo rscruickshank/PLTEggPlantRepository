@@ -1,0 +1,65 @@
+﻿(*
+Function - DeviceTearDown
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Close the browser and clear the cache
+Arguments - OS, device
+Returns - 
+*)
+to DeviceTearDown OS, device
+	Start using Omega13
+	//Check which device we're using, clear cache and make sure that the homepage is displayed
+	if OS = "iOS" then
+		PressHomeButton
+		if ImageFound(Image: "iOSSettings/iOSSettingsButton", Scale: ("Proportional"))
+			Tap FoundImageLocation()
+		end if
+		//Check if we need to go back to the Settings menu
+		if ImageFound(1, "iOSSettings/bt_BackToSettings") then
+			Tap "iOSSettings/bt_BackToSettings"
+		end if
+		//Check if we can already see the Safari Settings button
+		if ImageFound(1, Image: "iOSSettings/SafariSettings", Scale: ("Proportional")) then
+			//Tap it
+			Tap FoundImageLocation()
+		else
+			//If we're using a tablet, set rectangle to the left of the screen
+			if device = "iPadAir" then
+				//Make sure that we're at the top of the screen to avoid any issues when opening the browser
+				run Utils_Utilities.ScrollUntilFound "Down", "iOSSettings/tb_SearchSettings", "Search settings textbox", 7, "Log", 0, 1, 640, 1986
+				//Check that we can find the Safari Settings button
+				run Utils_Utilities.ScrollUntilFound "Up", "iOSSettings/SafariSettings", "Safari settings link", 7, "Tap", 0, 1, 640, 1986	
+			else	
+				//Make sure that we're at the top of the screen to avoid any issues when opening the browser
+				run Utils_Utilities.ScrollUntilFound "Down", "iOSSettings/tb_SearchSettings", "Search settings textbox", 5, "Log"
+				//Check that we can find the Safari Settings button
+				run Utils_Utilities.ScrollUntilFound "Up", "iOSSettings/SafariSettings", "Safari settings link", 5, "Tap"
+			end if
+		end if
+		//If we're using a tablet, unset the search rectangle
+		if device = "IPadAir" then
+			Set the SearchRectangle to ()
+		end if
+		//Search for the 'clear history' option and tap if found
+		run Utils_Utilities.ScrollUntilFound "Up", "iOSSettings/SafariClearHistoryandWebsiteData/li_SafariClearHistoryandWebsiteData", "Clear history and website data button", 5, "Tap"
+		//Wait for the screen to stop scrolling
+		Wait 2
+		Tap "iOSSettings/SafariClearHistoryandData"
+		PressHomeButton
+		//Check that we are back on the home screen
+		run Utils_Utilities.CheckForImage "SafariButton"
+		else if OS = "Android" then
+		run Utils_Utilities.CheckForImage "AndroidInternetButton"
+		//Check if we need to click Apps to find the Settings button
+		if not ImageFound(1, "AndroidSettings/sc_AndroidSettings") then
+			Tap "AndroidSettings/sc_AndroidApps"
+		end if
+		Tap "AndroidSettings/sc_AndroidSettings"
+		Tap "AndroidSettings/bt_AndroidApps"
+		run Utils_Utilities.ScrollUntilFound "Up", "AndroidSettings/lk_SamsungInternet", "Android Internet button", 5, "Tap"
+		Tap "AndroidSettings/lk_Storage"
+		Tap "AndroidSettings/bt_ClearCache"
+		
+	end if
+	Stop using Omega13
+end DeviceTearDown

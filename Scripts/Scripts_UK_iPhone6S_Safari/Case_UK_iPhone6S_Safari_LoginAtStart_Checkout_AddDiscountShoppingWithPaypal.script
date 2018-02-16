@@ -1,0 +1,40 @@
+﻿(*
+Function - Case_UK_iPhone6S_Safari_LoginAtStart_Checkout_AddDiscountShoppingWithPaypal
+Author - Rory Cruickshank
+Date - 26/06/2017
+Purpose - Add items to the shopping bag, input a shopping discount, then checkout using paypal
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile"
+
+//Navigate to the Register page and check that it has been found
+Tap "NavBarMobile/bt_BurgerMenu"
+run Utils_Utilities.CheckForImage "NavBarMobile/bt_LoginSignUp", "Login/Sign Up button"
+Click "NavBarMobile/bt_LoginSignUp"
+//Log in
+run Mthds_RegisterPage.RegistrationPageMobile "iPhone", "Login", , , "test@email.com", , , , , , "P@ssw0rd", "P@ssw0rd"
+//Navigate to Tops and select the first item
+run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Clothing", "NavBarClothingMobile/lk_TopsFrom4", "NavigationLandingPagesMobile/t_Topsfrom4Header", "Tops header"
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", 10,16, numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarMobile/lk_Basket"
+If ImageFound(15, "ShoppingBagMobile/bt_ProceedToCheckout") then
+	Tap "ShoppingBagMobile/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+run Mthds_Checkout.CouponCodeMobile "SCOTT", "Shopping"
+run Mthds_Checkout.DeliveryMethodMobile "iPhone", "UK Next Day", , , , "Yes"
+run Mthds_Checkout.PaymentMethodMobile "Paypal"
+run Mthds_Checkout.PlaceOrderMobile "Paypal", "", "", "", "", "", "asif_ali36-buyer@hotmail.com", "classic123"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone6S"

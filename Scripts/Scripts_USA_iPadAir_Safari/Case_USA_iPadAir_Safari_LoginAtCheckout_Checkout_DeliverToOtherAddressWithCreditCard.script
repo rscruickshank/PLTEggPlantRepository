@@ -1,0 +1,43 @@
+﻿(*
+Function - Case_USA_iPadAir_Safari_LoginAtCheckout_Checkout_DeliverToOtherAddressWithCreditCard
+Author - Rory Cruickshank
+Date - 06/07/2017
+Purpose - Add items to the shopping bag, login, select USA Saver delivery, then checkout using credit card
+Arguments - numberOfItems, forwardDate, expiryMonth, expiryYear
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put date + 1 year into forwardDate
+Set forwardDate.format to "%d%m%y"
+put (month of forwardDate) into expiryMonth
+put (year of forwardDate) into expiryYear
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "USA"
+
+//Navigate to Tops and select an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Clothing", "NavBarClothingTablet/lk_TopsFrom4", "NavigationLandingPagesTablet/t_TopsHeader", "Tops header"
+run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarTablet/lk_Basket"
+If ImageFound(15, "ShoppingBagTablet/bt_ProceedToCheckout") then
+	Tap "ShoppingBagTablet/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+Tap "CheckoutTablet/bt_LoginToAccount"
+run Mthds_LoginPage.LoginPageTablet "testUSA@email.com", "P@ssw0rd", "Checkout"
+//Set 'deliver to the same address' to no and select 'New address'
+run Utils_Utilities.SetElementState "Checkbox", "No", "CheckoutTablet/cb_DeliverToTheSameAddress/cb_DeliverToTheSameAddressSelected", "CheckoutTablet/cb_DeliverToTheSameAddress/cb_DeliverToTheSameAddressUnselected"
+run Mthds_Checkout.LoggedInSelectNewAddressTablet "Delivery"
+run Mthds_Checkout.EnterAddressTablet "iPadAir", "Susan", "Foreman", , "01234567890", , , , "NUnited States", "M407FS", "Yes", "PRETTYLITTLETHING.COM", "Pollard Street East", "MANCHESTER", , , "Alabama"
+run Mthds_Checkout.DeliveryMethodTablet "iPadAir", "USA Saver"
+run Mthds_Checkout.PaymentMethodTablet "Pay by Credit or Debit Card"
+run Mthds_Checkout.CouponCodeTablet "", "No", 
+run Mthds_Checkout.PlaceOrderTablet "Pay by Credit or Debit Card", "4444333322221111", expiryMonth, expiryYear, "123", "Barbara Wright"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

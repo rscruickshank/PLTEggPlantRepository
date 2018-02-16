@@ -1,0 +1,45 @@
+﻿(*
+Function - Case_Ireland_iPhone6S_Safari_LoginAtCheckout_Checkout_BillToOtherAddressWithCreditCard
+Author - Rory Cruickshank
+Date - 03/07/2017
+Purpose - Add items to the shopping bag, login, add a billing address, then checkout using credit card
+Arguments - numberOfItems, forwardDate, expiryMonth, expiryYear
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put date + 1 year into forwardDate
+Set forwardDate.format to "%d%m%y"
+put (month of forwardDate) into expiryMonth
+put (year of forwardDate) into expiryYear
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile", "Ireland"
+
+//Navigate to Beauty
+run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Accessories", "NavBarAccessoriesMobile/lk_Beauty", "NavigationLandingPagesMobile/t_Beauty", "Beauty header"
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", , , numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarMobile/lk_Basket"
+If ImageFound(15, "ShoppingBagMobile/bt_ProceedToCheckout") then
+	Tap "ShoppingBagMobile/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+run Mthds_LoginPage.LoginPageMobile "testIRE@email.com", "P@ssw0rd"
+//Add a billing address'
+run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/t_PaymentMethodHeader", "'Payment Method' header", 5, "Log",
+Tap "CheckoutMobile/bt_AddEdit"
+Tap "CheckoutMobile/bt_AddNewAddress"
+run Mthds_Checkout.ContinueAsGuestMobile "Susan", "Foreman", 
+run Mthds_Checkout.EnterAddressMobile "iPhone", "01234567890", , , , "Ireland", "M407FS", "Yes", "Wellington House", "Pollard Street East", "MANCHESTER", , "Yes", "Cork"
+run Mthds_Checkout.DeliveryMethodMobile "iPhone", "Standard Delivery", , , , "Yes"
+run Mthds_Checkout.CouponCodeMobile ""
+run Mthds_Checkout.PaymentMethodMobile "Pay by Credit or Debit Card"
+run Mthds_Checkout.PlaceOrderMobile "Pay by Credit or Debit Card", "4444333322221111", expiryMonth, expiryYear, "123", "Barbara Wright", ,
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

@@ -1,0 +1,35 @@
+﻿(*
+Function - Case_UK_iPadAir_Safari_Guest_Checkout_UKNextDayWithPaypal
+Author - Rory Cruickshank
+Date - 12/06/2017
+Purpose - Add items to the shopping bag, select Next Day Delivery, then checkout using paypal
+Arguments - numberOfItems, uniqueNumber
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put the seconds into uniqueNumber
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet"
+
+//Navigate to Tops and select an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Clothing", "NavBarClothingTablet/lk_TopsFrom4", "NavigationLandingPagesTablet/t_TopsHeader", "Tops header"
+run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarTablet/lk_Basket"
+If ImageFound(15, "ShoppingBagTablet/bt_ProceedToCheckout") then
+	Tap "ShoppingBagTablet/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+run Mthds_Checkout.EnterAddressTablet "iPad", "Barbara", "Wright", uniqueNumber & "test@email.com", "01234567890", "23", "November", "2005", "United Kingdom", "M407FS", "Yes", "PRETTYLITTLETHING.COM", "Wellington House, Pollard Street East", "No", "Yes", "Yes"
+run Mthds_Checkout.DeliveryMethodTablet "iPadAir", "UK Next Day"
+run Mthds_Checkout.PaymentMethodTablet "Paypal"
+run Mthds_Checkout.CouponCodeTablet "", "No", "Yes"
+run Mthds_Checkout.PlaceOrderTablet "Paypal", "", "", "", "", "", "asif_ali36-buyer@hotmail.com", "classic123"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

@@ -1,0 +1,24 @@
+﻿(*
+Function - Case_UK_GalaxyS6_Android_LoginAtStart_Register_RegisterFromHomepage
+Author - Rory Cruickshank
+Date - 26/05/2017
+Purpose - Load the homepage and register a new user
+Arguments - 
+Returns - 
+*)
+
+//Initialise our unique number variable
+put the seconds into uniqueNumber
+
+//Start by loading our homepage
+run Mthds_PageLoad.DevicePageLoad "Android", "Mobile"
+
+//Navigate to the Register page and check that it has been found
+Tap "NavBarMobile/bt_BurgerMenu"
+Tap "NavBarMobile/bt_LoginSignUp"
+run Utils_Utilities.CheckForImage "NavBarMobile/bt_LoginSignUp", "Login/Sign Up button"
+Click "NavBarMobile/bt_LoginSignUp"
+run Mthds_RegisterPage.RegistrationPageMobile "iPhone", "Register", "Bruce", "Wayne", uniqueNumber & "test@email.com", "01234567890", "23", "November", "2005", "Yes", "password", "password"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS"

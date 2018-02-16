@@ -1,0 +1,22 @@
+﻿(*
+Function - Case_Ireland_iPhone6S_Safari_Guest_Product_AddAnItemToBag
+Author - Rory Cruickshank
+Date - 31/05/2017
+Purpose - Navigate to Sale Dresses and add an item to the shopping bag
+Arguments - 
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by loading our homepage
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile"
+//Navigate to the required country page
+run Mthds_PageLoad.OpenOtherSite "Mobile", "CountrySelectorMobile/mi_IrelandEUR", "Ireland", "CountrySelectorMobile/mi_IrelandSelected"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", 8, 16, numberOfItems
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS"

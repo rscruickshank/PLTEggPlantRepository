@@ -1,0 +1,44 @@
+﻿(*
+Function - Case_NewZealand_iPadAir_Safari_LoginAtStart_Checkout_DeliverToOtherAddressWithCreditCard
+Author - Rory Cruickshank
+Date - 06/07/2017
+Purpose - Add items to the shopping bag, then add a new delivery address and checkout using credit card
+Arguments - numberOfItems, forwardDate, expiryMonth, expiryYear
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put date + 1 year into forwardDate
+Set forwardDate.format to "%d%m%y"
+put (month of forwardDate) into expiryMonth
+put (year of forwardDate) into expiryYear
+
+//Start by loading our homepage//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "New Zealand"
+
+//Navigate to the Login page and log in
+run Utils_Utilities.CheckForImage "NavBarTablet/lk_Login", "Login link"
+Click "NavBarTablet/lk_Login"
+run Mthds_LoginPage.LoginPageTablet "testNZ@email.com", "P@ssw0rd", "Login Page"
+//Navigate to Tops and select an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Clothing", "NavBarClothingTablet/lk_TopsFrom4", "NavigationLandingPagesTablet/t_TopsHeader", "Tops header"
+//run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarTablet/lk_Basket"
+Tap "ShoppingBagTablet/bt_ProceedToCheckout"
+//Check that the name and address fields are not displayed
+run Mthds_Checkout.CheckAddressFieldsNotDisplayedTablet
+run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/cb_UseAsMyDefaultBillingAddress", "'Use as my default billing address' checkbox", 5, "Log"
+//Set 'deliver to the same address' to no and select 'New address'
+run Utils_Utilities.SetElementState "Checkbox", "No", "CheckoutTablet/cb_DeliverToTheSameAddress/cb_DeliverToTheSameAddressSelected", "CheckoutTablet/cb_DeliverToTheSameAddress/cb_DeliverToTheSameAddressUnselected"
+run Mthds_Checkout.LoggedInSelectNewAddressTablet "Delivery"
+run Mthds_Checkout.EnterAddressTablet "iPadAir", "Susan", "Foreman", , "01234567890", , , , "New Zealand", "M407FS", "Yes", "PRETTYLITTLETHING.COM", "Pollard Street East", "MANCHESTER", , , "Waikato"
+run Mthds_Checkout.DeliveryMethodTablet "iPadAir", "New Zealand Saver"
+run Mthds_Checkout.PaymentMethodTablet "Pay by Credit or Debit Card"
+run Mthds_Checkout.CouponCodeTablet "", "No", "Yes"
+run Mthds_Checkout.PlaceOrderTablet "Pay by Credit or Debit Card", "4444333322221111", expiryMonth, expiryYear, "123", "Barbara Wright"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

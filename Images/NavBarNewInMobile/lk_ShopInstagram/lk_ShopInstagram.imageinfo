@@ -1,0 +1,20 @@
+﻿{
+    CaptureDate = "2017-05-19 10:37:35 +0000";
+    CaptureHost = "Edin iPhone 6S";
+    CaptureScreenSize =     (
+        750,
+        1334
+    );
+    HasAlpha = 1;
+    HotSpotX = 105;
+    HotSpotY = 12;
+    ImageDescription = <>;
+    ImageTolerance = 73;
+    LastKnownLocationX = 0;
+    LastKnownLocationY = 0;
+    OriginalLocationX = 251;
+    OriginalLocationY = 786;
+    Precise = 0;
+    Pulsing = 1;
+    Scale = 1;
+}

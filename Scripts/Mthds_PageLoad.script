@@ -1,0 +1,151 @@
+﻿(*
+Function - DevicePageLoad
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Select the required device and load the homepage
+Arguments - browser, device, location, currency, environment
+Returns - 
+*)
+to DevicePageLoad browser, device, location, environment, currency
+	Start using Omega13
+	
+	//Initialise the variables
+	set waitTime to 20
+	set count to 0
+	//Check which environment we're using
+	if environment.length = 0 then
+		Set environment to "staging"
+	end if
+	
+	//Make sure that our device is on the homepage
+	PressHomeButton
+	//Check which browser we're using then open the browser and select the search bar
+	if browser = "Safari" then		
+		Tap SafariButton
+		//Make sure that we're at the top of the screen
+		repeat while not ImageFound("SafariSearchBar") and count <= 5
+			SwipeDown 
+			Set count to count+1
+		end repeat
+		if count = 5 then
+			LogError "Have not found the search bar after " & count & " attempts"
+		end if
+		Tap SafariSearchBar
+	else if browser = "Android" then
+		Tap AndroidInternetButton
+		Tap AndroidInternetSearchBar
+	else if browser = "Chrome" then
+		Tap ChromeButton
+		Tap ChromeSearchBar
+	end if
+	//Input our homepage URL
+	if location = "UK" then
+		TypeText "https://" & environment & ".prettylittlething.com"
+		TypeText returnKey
+		set currency to "£"
+	else if location = "Ireland" then
+		TypeText "https://" & environment & "-ie.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectIreland"
+		end if
+		set currency to "€"
+	else if location = "Europe"
+		TypeText "https://" & environment & "-eu.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectEurope"
+		end if
+		set currency to "€"
+	else if location = "Australia"
+		TypeText "https://" & environment & "-au.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectAustralia"
+		end if
+		set currency to "$"
+	else if location = "New Zealand"
+		TypeText "https://" & environment & "-au.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectNewZealand"
+		end if
+		set currency to "$"
+	else if location = "USA"
+		TypeText "https://" & environment & "-us.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectUSA"
+		end if
+		set currency to "$"
+	else if location = "Canada"
+		TypeText "https://" & environment & "-ca.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectCanada"
+		end if
+		set currency to "$"	
+	else if location = "France"
+		TypeText "https://" & environment & "-fr.prettylittlething.com"
+		TypeText returnKey
+		//Check if we need to select the country
+		if ImageFound(waitTime, "CountrySelector" & device & "/t_LocationSelectionHeader") then
+			Tap "CountrySelector" & device & "/bt_SelectFrance"
+		end if
+		set currency to "€"
+	else
+		Log "No country given so setting to UK by default"
+		TypeText "https://" & environment & ".prettylittlething.com"
+		TypeText returnKey
+		set currency to "£"
+	end if
+	//Check that we have loaded the homepage correctly
+	WaitFor 15, "NavBar" & device & "/lk_Home"
+	//Add a little wait to ensure that the page has finished loading
+	Wait 10
+	//Check if the Accept Cookies message is displayed
+	if ImageFound(0.5, "ErrorCauses/bt_AcceptCookies") then
+		Click "ErrorCauses/bt_AcceptCookies"
+	end if
+	Stop using Omega13
+	//Return the currency
+	return currency
+end DevicePageLoad
+
+(*
+Function - OpenOtherSite
+Author - Rory Cruickshank
+Date - 30/05/2017
+Purpose - Select the required country and load that page
+Arguments - device, countryLink, countryName, countrySelected
+Returns - 
+*)
+to OpenOtherSite device, countryLink, countryName, countrySelected
+	Start using Omega13
+	//Check which device we're using
+	if device = "Mobile" then
+		Tap "NavBarMobile/bt_BurgerMenu"
+		Tap "CountrySelectorMobile/mi_UnitedKingdomSelected"
+		//Check for the required country
+		run Utils_Utilities.CheckForImage countryLink, countryName
+		Tap countryLink
+		//Check that the selected country has been loaded
+		Tap "NavBarMobile/bt_BurgerMenu"
+		run Utils_Utilities.CheckForImage countrySelected, countryName
+		Tap "NavBarMobile/bt_CloseBurgerMenu"
+	else if device = "Tablet" then
+		Tap "CountrySelectorTablet/mi_UnitedKingdomSelected"
+		//Check for the required country
+		run Utils_Utilities.CheckForImage countryLink, countryName
+		Tap countryLink
+		//Check that the selected country has been loaded
+		run Utils_Utilities.CheckForImage countrySelected, countryName
+	end if
+	Stop using Omega13
+end OpenOtherSite

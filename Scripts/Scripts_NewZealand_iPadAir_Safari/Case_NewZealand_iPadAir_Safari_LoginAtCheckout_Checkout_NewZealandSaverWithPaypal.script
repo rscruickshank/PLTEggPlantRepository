@@ -1,0 +1,35 @@
+﻿(*
+Function - Case_NewZealand_iPadAir_Safari_LoginAtCheckout_Checkout_NewZealandSaverWithPaypal
+Author - Rory Cruickshank
+Date - 06/07/2017
+Purpose - Add items to the shopping bag, login, select New Zealand Saver delivery, then checkout using paypal
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "New Zealand"
+
+//Navigate to Tops and select an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Clothing", "NavBarClothingTablet/lk_TopsFrom4", "NavigationLandingPagesTablet/t_TopsHeader", "Tops header"
+run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarTablet/lk_Basket"
+If ImageFound(15, "ShoppingBagTablet/bt_ProceedToCheckout") then
+	Tap "ShoppingBagTablet/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+Tap "CheckoutTablet/bt_LoginToAccount"
+run Mthds_LoginPage.LoginPageTablet "testNZ@email.com", "P@ssw0rd", "Checkout"
+run Mthds_Checkout.DeliveryMethodTablet "iPadAir", "New Zealand Saver"
+run Mthds_Checkout.PaymentMethodTablet "Paypal"
+run Mthds_Checkout.CouponCodeTablet "", "No", "Yes"
+run Mthds_Checkout.PlaceOrderTablet "Paypal", , , , , , "asif_ali36-buyer@hotmail.com", "classic123"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

@@ -1,0 +1,20 @@
+﻿{
+    CaptureDate = "2017-05-24 10:26:08 +0000";
+    CaptureHost = "Edin Android Galaxy S6";
+    CaptureScreenSize =     (
+        1440,
+        2560
+    );
+    CropRectangle = "0,0,100,22";
+    HasAlpha = 1;
+    HotSpotX = 50;
+    HotSpotY = 34;
+    ImageDescription = <>;
+    LastKnownLocationX = 0;
+    LastKnownLocationY = 0;
+    OriginalLocationX = 958;
+    OriginalLocationY = 347;
+    Precise = 0;
+    Pulsing = 0;
+    Scale = 1;
+}

@@ -1,0 +1,20 @@
+﻿(*
+Function - Case_NewZealand_iPadAir_Safari_Guest_Products_NavigateThroughPages
+Author - Rory Cruickshank
+Date - 06/07/2017
+Purpose - Load the homepage and check all of the navigation links
+Arguments - 
+Returns - 
+*)
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "New Zealand"
+
+//Check that the NavBar is displayed as expected for the required device
+run Mthds_CheckNavBar.CheckNavBar "Tablet"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesTablet
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

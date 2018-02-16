@@ -1,0 +1,419 @@
+﻿(*
+Function - CheckForImage
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Check if image of an element is displayed and return warning if not found
+Arguments - imageName, imageDescription
+Returns - LogWarning 
+*)
+to CheckForImage imageName, imageDescription
+	Try
+		if imageFound (15, image: imageName, scale: ("Proportional")) then
+			//No action required
+		else
+			LogWarning imageDescription & " not displayed"
+			CaptureScreen (Name: "ElementNotFound-" & imageDescription)
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+	
+end CheckForImage
+
+(*
+Function - CheckForInputValue
+Author - Rory Cruickshank
+Date - 24/05/2017
+Purpose - Check if text value of a variable is displayed and return an error if value is not displayed
+Arguments - inputType, inputValue, searchAreaTopLeft, searchAreaBottomRight
+Returns - LogWarning 
+*)
+to CheckForInputValue inputType, inputValue, searchAreaTopLeft, searchAreaBottomRight, font
+	try
+		//First set our search area 	
+		Set the SearchRectangle to (searchAreaTopLeft, searchAreaBottomRight)
+		//Now check for the expected value
+		if not imageFound(Text: inputValue, TextFont: font) then
+			LogError inputType &" " & inputValue & " not found in search area"
+			CaptureScreen (Name: "CheckForInputValue")
+			
+		end if
+		//Unset the search area
+		Set the searchRectangle to ()
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end CheckForInputValue
+
+(*
+Function - CheckShoppingBag
+Author - Rory Cruickshank
+Date - 07/06/2017
+Purpose - A precise check to find the number displayed in the shopping bag icon and compare to the expected value
+Arguments - imageName, inputValue
+Returns - LogWarning 
+*)
+to CheckShoppingBag imageName, inputValue
+	try
+		//Find the element and then create a search area within it's bounds
+		put ImageFound(imageName)
+		put FoundImageLocation() + (-15, -12) into topLeft
+		put FoundImageLocation() + (15, 12) into bottomRight
+		if ReadText(topLeft, bottomRight) = inputValue then
+			LogSuccess "Shopping bag value of " & inputValue & " displayed as expected."
+		else
+			LogError "Unexpected result from shopping bag. Expected result: " & inputValue & " but actual result: " & ReadText(topLeft, bottomRight)
+			CaptureScreen (Name: "CheckShoppingBag")
+			
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end CheckShoppingBag
+
+(*
+Function - CheckOrderValues
+Author - Rory Cruickshank
+Date - 22/06/2017
+Purpose - A precise check to find the number displayed beside the given item on the order details
+Arguments - imageName
+Returns - returnValue 
+*)
+to CheckOrderValues imageName
+	try
+		//Find the element and then create a search area within it's bounds
+		put ImageFound(imageName)
+		put FoundImageLocation() + (-45, -15) into topLeft
+		put FoundImageLocation() + (45, 15) into bottomRight
+		put ReadText(topLeft, bottomRight) into returnValue
+		put keepCharacters(returnValue, "1234567890.") into returnValue
+		return returnValue
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end CheckOrderValues
+
+(*
+Function - SelectInputValue
+Author - Rory Cruickshank
+Date - 31/05/2017
+Purpose - Check if text value of a variable is displayed, select if found or return an error if value is not displayed
+Arguments - inputType, inputValue, searchAreaTopLeft, searchAreaBottomRight
+Returns - LogWarning 
+*)
+to SelectInputValue inputType, inputValue, searchAreaTopLeft, searchAreaBottomRight
+	try
+		//First set our search area 	
+		Set the SearchRectangle to (searchAreaTopLeft, searchAreaBottomRight)
+		//Now check for the expected value
+		if imageFound(Text: inputValue) then
+			Tap FoundImageLocation()
+		else
+			LogError inputType &" " & inputValue & " not found in search area"
+		end if
+		//Unset the search area
+		Set the searchRectangle to ()
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end SelectInputValue
+
+(*
+Function - SelectFromDropdown
+Author - Rory Cruickshank
+Date - 23/05/2017
+Purpose - Check if text value of a variable is displayed and, if not, either scroll until it appears or until reach the end of the list
+Arguments - valueToSelect, finalValue, swipeDirection, topX, topY, bottomX, bottomY
+Returns - LogWarning 
+*)
+to SelectFromDropdown device, valueToSelect, finalValue, swipeDirection, topX, topY, bottomX, bottomY
+	try
+		//First set our variables
+		Set counter to 0
+		Set found to true
+		Set the SearchRectangle to (topX, topY, bottomX, bottomY)
+		Set midpointX to ((topX+bottomX)/2)
+		Set midpointY to ((topY+bottomY)/2)
+		//Now perform the first check 
+		repeat while not ImageFound(0.5, Text: valueToSelect)
+			Set found to false
+			//Check if this is using an iPhone which requires drag and drop
+			if device = "iPhone" then
+				if swipeDirection = "Up" then
+					DragAndDrop (midpointX, midpointY), (midpointX, midpointY-250)
+				else if swipeDirection = "Down" then
+					DragAndDrop (midpointY, midpointY), (midpointX, midpointY+250)
+				end if
+			else
+				//Check which direction we need to swipe and set to the midpoint of the rectangle
+				if swipeDirection = "Up" then
+					SwipeUp (midpointX, midpointY)
+				else if swipeDirection = "Down" then
+					SwipeDown (midpointX, midpointY)
+				end if
+			end if
+			
+			if imageFound(1, Text: valueToSelect)
+				Set found to true
+				Exit repeat
+			else if finalValue.length > 0 then
+				if imageFound(0.5, Text: finalValue) then
+					LogError "Reached final value of " & finalValue & " and value of " & valueToSelect & " not found"	
+					Exit repeat
+				end if
+			else
+				Set counter to counter+1
+				//Check if we have tripped the counter over 10 times already, to avoid hitting an infinite loop
+				if counter = 15 then
+					LogError "List has been scrolled 10 times and value of " & valueToSelect & " has not been found"
+					Exit repeat
+				end if
+			end if
+		end repeat
+		if found = true then
+			//iPhone has different behaviour, so we need to relocate the image once we've tapped it
+			if device = "iPhone" then
+				//Wait for image to stabilise
+				Wait 3
+				if imageFound(2, Text: valueToSelect)
+					Tap FoundImageLocation()
+					Tap "iOSKeyboard/SafariCloseKeyboard"
+				end if
+			else
+				DoubleTap FoundImageLocation()
+			end if
+		end if
+		//Unset the search area
+		Set the searchRectangle to ()
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end SelectFromDropdown
+
+(*
+Function - CheckRadioButton
+Author - Rory Cruickshank
+Date - 24/05/2017
+Purpose - Check if radio button is set to the desired state and set it if not
+Arguments - requestedState, expectedStateImage, unexpectedStateImage
+Returns - Log 
+*)
+to CheckRadioButton requestedState, expectedStateImage, unexpectedStateImage
+	try
+		//Check if the element is in the state we expect to find. If not, click to set it
+		if ImageFound(expectedStateImage)
+			Log "Radio button status already set to " & requestedState & " so no action required"
+		else
+			Click unexpectedStateImage
+			run Utils_Utilities.CheckForImage(expectedStateImage)
+			Log "Radio button status set to " & requestedState
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end CheckRadioButton
+
+(*
+Function - SetElementState
+Author - Rory Cruickshank
+Date - 09/06/2017
+Purpose - Check if checkbox or radio button is to be set and call handler to set it
+Arguments - element, expectedState, selectedState, unselectedState
+Returns - 
+*)
+to SetElementState element, expectedState, selectedState, unselectedState
+	try
+		if expectedState = "Yes" then
+			run Utils_Utilities.CheckElement element, expectedState, selectedState, unselectedState
+		else if expectedState = "No" then
+			run Utils_Utilities.CheckElement element, expectedState, unselectedState, selectedState
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end SetElementState
+
+(*
+Function - CheckElement
+Author - Rory Cruickshank
+Date - 25/05/2017
+Purpose - Check if a checkbox or radio button is set to the desired state and set it if not
+Arguments - element, requestedState, expectedStateImage, unexpectedStateImage
+Returns - Log 
+*)
+to CheckElement element, requestedState, expectedStateImage, unexpectedStateImage
+	try
+		//Check if the element is in the state we expect to find. If not, click to set it
+		if ImageFound(1, expectedStateImage)
+			Log element & " status already set to '" & requestedState & "' so no action required"
+		else
+			Click unexpectedStateImage
+			run Utils_Utilities.CheckForImage(expectedStateImage)
+			Log element &" status set to " & requestedState
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end CheckElement
+
+(*
+Function - SetAddress
+Author - Rory Cruickshank
+Date - 09/06/2017
+Purpose - Select the desired textbox, input text and close the keyboard
+Arguments - device, postcodeTextbox, postcode, country, addressFinder, findAddressButton, selectYourAddressListbox, topX, topY, bottomX, bottomY, streetAddress1Textbox, streetAddress1, streetAddress2Textbox, streetAddress2, cityTextbox, city, countyTextbox, county
+Returns - 
+*)
+to SetAddress device, postcodeTextbox, postcode, country, addressFinder, findAddressButton, selectYourAddressListbox, topX, topY, bottomX, bottomY, streetAddress1Textbox, streetAddress1, streetAddress2Textbox, streetAddress2, cityTextbox, city, regionTextbox, region
+	try
+		//Postcode appears at the top on UK site
+		if country is in "United Kingdom, New Zealand" then
+			run Utils_Utilities.TypeAndCloseKeyboard postcodeTextbox, postcode, "iOSKeyboard/SafariCloseKeyboard"
+		end if
+		//Check if we're using the address finder
+		if country = "United Kingdom" and if addressFinder = "Yes" then
+			Click findAddressButton
+			Click selectYourAddressListbox
+			//Now search for the address
+			run Utils_Utilities.SelectFromDropdown device, streetAddress1, "", "Up", topX, topY, bottomX, bottomY
+		else
+			//If either of those statements are false, we'll need to manually input the address
+			if country = "United Kingdom" and device = "iPhone" then
+				Tap "CheckoutMobile/bt_EnterAddressManually"
+			end if
+			//Check if we need to add region
+			if region.length > 0 then
+				//Check if the given country is in our list of countries
+				if country is in "United States, France, Australia" then
+					//Region appears as a listbox
+					Click regionTextbox
+					run Utils_Utilities.SelectFromDropdown device, region, "", "Up", topX, topY, bottomX, bottomY
+				else
+					//Region is a textbox
+					run Utils_Utilities.TypeAndCloseKeyboard regionTextbox, region, "iOSKeyboard/SafariCloseKeyboard"
+				end if
+			end if
+			run Utils_Utilities.TypeAndCloseKeyboard cityTextbox, city, "iOSKeyboard/SafariCloseKeyboard"
+			run Utils_Utilities.TypeAndCloseKeyboard streetAddress1Textbox, streetAddress1, "iOSKeyboard/SafariCloseKeyboard"
+			run Utils_Utilities.TypeAndCloseKeyboard streetAddress2Textbox, streetAddress2, "iOSKeyboard/SafariCloseKeyboard"
+			//Postcode appears at the bottom on non-UK site
+			if country is not in "United Kingdom, New Zealand" then
+				run Utils_Utilities.TypeAndCloseKeyboard postcodeTextbox, postcode, "iOSKeyboard/SafariCloseKeyboard"
+			end if
+			
+		end if
+		Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end SetAddress
+
+(*
+Function - TypeAndCloseKeyboard
+Author - Rory Cruickshank
+Date - 25/05/2017
+Purpose - Select the desired textbox, input text and close the keyboard
+Arguments - textboxName, textToInput, keyboardCloseButton
+Returns - 
+*)
+to TypeAndCloseKeyboard textboxName, textToInput, keyboardCloseButton
+	try	
+		Tap textboxName
+		TypeText textToInput
+		if keyboardCloseButton.length > 0 then
+			Tap keyboardCloseButton
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end TypeAndCloseKeyboard
+
+(*
+Function - ScrollUntilFound
+Author - Rory Cruickshank
+Date - 01/06/2017
+Purpose - Select the desired direction, scroll until found or number of attempts reached
+Arguments - direction, searchedElement, elementDescription, numberOfAttempts
+Returns - 
+*)
+to ScrollUntilFound direction, searchedElement, elementDescription, numberOfAttempts, action, topX, topY, bottomX, bottomY
+	try
+		//Initialise our variables
+		Set count to 0
+		//Check if search rectangle has been specified
+		if topX.length > 0 then
+			Set the SearchRectangle to (topX, topY, bottomX, bottomY)
+			Set midpointX to ((topX+bottomX)/2)
+			Set midpointY to ((topY+bottomY)/2)		
+		end if
+		
+		//Scroll until we find the object or reach the maximum number of attempts
+		repeat while not ImageFound(0.5, Image: searchedElement, Scale: ("Proportional")) and count <=numberOfAttempts
+If topX.length > 0 then
+				If direction = "Up" then
+					SwipeUp (midpointX, midpointY)
+				else if direction = "Down" then
+					SwipeDown (midpointX, midpointY)
+				End If
+				Set count to count+1		
+			else	
+				If direction = "Up" then
+					SwipeUp 
+				else if direction = "Down" then
+					SwipeDown
+				End If
+				Set count to count+1
+			End If
+		end repeat
+		//If we have found the searched element, take the required action. If not, return an error
+		if ImageFound(0.5, Image: searchedElement, Scale: ("Proportional")) then
+			if action = "Tap" then
+				DoubleTap searchedElement
+			else if action = "Log" then
+				LogSuccess "Found element " & elementDescription
+			end if
+		else if count >=5 then
+			throw "Scroll to find object", "Scrolled " & direction & " " & count & " times and did not find " & elementDescription
+		end if
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end ScrollUntilFound
+
+(*
+Function - GetDatePart
+Author - Rory Cruickshank
+Date - 12/06/2017
+Purpose - Set a date one year from the current date
+Arguments - selectedDate, datePart
+Returns - returnedValue
+*)
+to GetDatePart selectedDate, datePart
+	try
+		put selectedDate into myDate
+		Set myDate.format to "%d/%m/%y"
+		split myDate using "/"
+		if datePart = "Day" then
+			put item 1 of myDate into returnedValue
+		else if datePart = "Month" then
+			put item 2 of myDate into returnedValue
+		else if datePart = "Year" then
+			put item 3 of myDate into returnedValue
+		end if
+		return returnedValue
+	Catch exception
+		LogError "Exception occurred: " & exception
+		throw exception — re-throw the exception (if desired)
+	End try
+end GetDatePart

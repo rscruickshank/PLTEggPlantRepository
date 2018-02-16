@@ -1,0 +1,40 @@
+﻿(*
+Function - Case_UK_iPadAir_Safari_LoginAtStart_Checkout_UKSaverWithPaypal
+Author - Rory Cruickshank
+Date - 23/06/2017
+Purpose - Add items to the shopping bag, select UK Saver delivery, then checkout using paypal
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put the seconds into uniqueNumber
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet"
+
+//Navigate to the Login page and log in
+run Utils_Utilities.CheckForImage "NavBarTablet/lk_Login", "Login link"
+Click "NavBarTablet/lk_Login"
+run Mthds_LoginPage.LoginPageTablet "test@email.com", "P@ssw0rd", "Login Page"
+//Navigate to Beauty and add an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Accessories", "NavBarAccessoriesTablet/lk_Beauty", "NavigationLandingPagesTablet/t_BeautyAccessoriesHeader", "Beauty Accessories header"
+run Mthds_AddAnItem.AddAnItem "Tablet", , , numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarTablet/lk_Basket"
+If ImageFound(15, "ShoppingBagTablet/bt_ProceedToCheckout") then
+	Tap "ShoppingBagTablet/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+//Check that the name and address fields are not displayed
+run Mthds_Checkout.CheckAddressFieldsNotDisplayedTablet
+run Mthds_Checkout.DeliveryMethodTablet "iPad", "UK Saver"
+run Mthds_Checkout.PaymentMethodTablet "Paypal"
+run Mthds_Checkout.CouponCodeTablet "", "No", 
+run Mthds_Checkout.PlaceOrderTablet "Paypal", "", "", "", "", "", "asif_ali36-buyer@hotmail.com", "classic123"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

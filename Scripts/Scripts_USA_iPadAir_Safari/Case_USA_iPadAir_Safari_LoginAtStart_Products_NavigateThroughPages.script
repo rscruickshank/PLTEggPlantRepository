@@ -1,0 +1,22 @@
+﻿(*
+Function - Case_USA_iPadAir_Safari_LoginAtStart_Products_NavigateThroughPages
+Author - Rory Cruickshank
+Date - 06/07/2017
+Purpose - Load the homepage, log in and check all of the navigation links
+Arguments - 
+Returns - 
+*)
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "USA"
+
+//Navigate to the Login page and log in
+run Utils_Utilities.CheckForImage "NavBarTablet/lk_Login", "Login link"
+Click "NavBarTablet/lk_Login"
+run Mthds_LoginPage.LoginPageTablet "testUSA@email.com", "P@ssw0rd", "Login Page"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesTablet
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

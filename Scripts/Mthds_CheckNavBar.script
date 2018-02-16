@@ -1,0 +1,561 @@
+﻿(*
+Function - CheckNavBar
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check if expected elements are displayed on the NavBar
+Arguments - device, loggedIn
+Returns - 
+*)
+to CheckNavBar device, loggedIn
+	Start using Omega13
+	//Check that the NavBar is displayed as expected for the required device
+	if device is in "Tablet, Desktop" then
+		run Mthds_CheckNavBar.CheckNavBarTablet loggedIn
+	else if device = "Mobile" then
+		run Mthds_CheckNavBar.CheckNavBarMobile loggedIn
+	end if
+	Stop using Omega13
+end CheckNavBar
+
+(*
+Function - CheckNavBarTablet
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Check if expected elements are displayed on the NavBar on a tablet device
+Arguments - loggedIn
+Returns - 
+*)
+to CheckNavBarTablet loggedIn
+	Start using Omega13
+	//Check if we are already logged in
+	If loggedIn = "Yes" then
+		run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Account", "Account link"
+		run Utils_Utilities.CheckForImage, "NavBarTablet/lk_SignOut", "Sign out link"
+		run Utils_Utilities.CheckForImage, "NavBarTablet/lk_LoggedInHeart", "Logged in icon"
+	else
+		run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Login", "Login link"
+		run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Register", "Register link"
+		run Utils_Utilities.CheckForImage, "NavBarTablet/lk_LoginHeart", "Login icon"
+	End If
+	run Utils_Utilities.CheckForImage, "NavBarTablet/mi_BritishGBP", "British GBP icon "
+	run Utils_Utilities.CheckForImage, "NavBarTablet/bt_Search", "Search button"
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Basket", "Basket icon"
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_NewIn", "New In link"
+	run Mthds_CheckNavBar.CheckNewInTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Clothing", "Clothing link"
+	run Mthds_CheckNavBar.CheckClothingTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Dresses", "Dresses link"
+	run Mthds_CheckNavBar.CheckDressesTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Shoes", "Shoes link"
+	run Mthds_CheckNavBar.CheckShoesTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Beauty", "Beauty link"
+	run Mthds_CheckNavBar.CheckBeautyTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Accessories", "Accessories link"
+	run Mthds_CheckNavBar.CheckAccessoriesTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_Sale", "Sale link"
+	run Mthds_CheckNavBar.CheckSaleTablet
+	run Utils_Utilities.CheckForImage, "NavBarTablet/lk_PLTStyle", "PLT Style link"
+	Stop using Omega13
+end CheckNavBarTablet
+
+(*
+Function - CheckNavBarMobile
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Check if expected elements are displayed on the NavBar on a mobile device
+Arguments - loggedIn
+Returns - 
+*)
+to CheckNavBarMobile loggedIn
+	Start using Omega13
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Basket", "Basket link"
+	run Utils_Utilities.CheckForImage "NavBarMobile/bt_Search", "Search button"
+	run Utils_Utilities.CheckForImage "NavBarMobile/bt_BurgerMenu", "Burger menu button"
+	//Open the burger menu and check that the expected links are displayed
+	Tap "NavBarMobile/bt_BurgerMenu"
+	run Utils_Utilities.CheckForImage "NavBarMobile/t_ShopHeader", "Shop header"
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_NewIn", "New In link"
+	run Mthds_CheckNavBar.CheckNewInMobile
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Clothing", "Clothing link"
+	run Mthds_CheckNavBar.CheckClothingMobile
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Dresses", "Dresses link"
+	run Mthds_CheckNavBar.CheckDressesMobile
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Shoes", "Shoes link"
+	run Mthds_CheckNavBar.CheckShoesMobile
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Beauty", "Beauty link"
+	run Mthds_CheckNavBar.CheckBeautyMobile
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Accessories", "Accessories link"
+	run Mthds_CheckNavBar.CheckAccessoriesMobile
+	run Utils_Utilities.CheckForImage "NavBarMobile/lk_Sale"
+	run Mthds_CheckNavBar.CheckSaleMobile
+	Stop using Omega13
+end CheckNavBarMobile
+
+(*
+Function - CheckNewInTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under New In are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckNewInTablet
+	Start using Omega13
+	//Tap the New In button to open submenu
+	Tap "NavBarTablet/lk_NewIn"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/t_NewInHeader", "New In header"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_ViewAll", "View All new in link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_NewInClothing", "New In Clothing link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_NewInShoes", "New In Shoes link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_NewInAccessories", "New In Accessories link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_NewInDresses", "New In Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_NewInBeauty", "New In Beauty link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_BackInStock", "Back In Stock link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_ShopInstagram", "Shop Instagram link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/t_FeaturedShopsHeader", "Featured Shops header"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_ShopTheAd", "Shop The Ad link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_Weddings", "Weddings link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_PromShop", "Prom Shop link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_OccasionShop", "Occasion Shop link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_WhiteOut", "White Out link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_Prints", "Prints link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_Festival", "Festival link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_GoingOut", "Going Out link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_RaceDay", "Race Day link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_HighLow", "High-Low link"
+	run Utils_Utilities.CheckForImage "NavBarNewInTablet/lk_Workwear", "Workwear link"
+	//Tap the New In button again to close the submenu
+	Tap "NavBarTablet/lk_NewIn"
+	Stop using Omega13
+end CheckNewInTablet
+
+(*
+Function - CheckNewInMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under New In are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckNewInMobile
+	Start using Omega13
+	//Tap the New In button to open submenu
+	Tap "NavBarMobile/lk_NewIn"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_ViewAll", "View All new in link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_NewInClothing", "New In Clothing link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_NewInShoes", "New In Shoes link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_NewInAccessories", "New In Accessories link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_NewInDresses", "New In Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_NewInBeauty", "New In Beauty link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_BackInStock", "Back In Stock link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_ShopInstaqram", "Shop Instagram link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_ShopTheAd", "Shop The Ad link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_Weddings", "Weddings link"
+	run Utils_Utilities.CheckForImage "NavBarNewInMobile/lk_PromShop", "Prom Shop link"
+	//Tap the New In button again to close the submenu
+	Tap "NavBarMobile/lk_NewIn"
+	Stop using Omega13
+end CheckNewInMobile
+
+(*
+Function - CheckClothingTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under Clothing are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckClothingTablet
+	Start using Omega13
+	//Tap the Clothing button to open submenu
+	Tap "NavBarTablet/lk_Clothing"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/t_ClothingHeader", "Clothing header"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_ViewAll", "View All clothing link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_DressesFrom8", "Dresses - From £8 link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_TopsFrom4", "Tops - From £4 link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Bodysuits", "Bodysuits link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_CropTopsBralets", "Crop Tops & Bralets link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_CoatsJackets", "Coats & Jackets link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Knitwear", "Knitwear link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Jumpsuits", "Jumpsuits link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Jeans"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Playsuits", "Playsuits link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_SweatersHoodies", "Sweaters & Hoodies link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Swimwear", "Swimwear link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Coords", "Co-ords link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_DenimShop", "Denim Shop link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Skirts", "Skirts link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Shorts", "Shorts link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Leggings", "Leggings link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Trousers", "Trousers link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Lingerie", "Lingerie link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Loungewear", "Loungewear link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_BasicsFrom4", "Basics - From £4 link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_OnesiesNightwear", "Onesies & Nightwear link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/t_ShopByHeader", "Shop By header"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_ShopTheAd", "Shop The Ad link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Weddings", "Weddings link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_GoingOut", "Going Out link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_OccasionShop", "Occasion Shop link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_HolidayShop", "Holiday Shop link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Metallic", "Metallic link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Ruffles", "Ruffles link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_RaceDay", "Race Day link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Gingham", "Gingham link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Prints", "Prints link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Festival", "Festival link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_WhiteOut", "White Out link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_SummerEssentials", "Summer Essentials link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Workwear", "Workwear link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_ShopInstagram", "Shop Instagram link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_Sale", "Sale link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/t_PLTRangesHeader", "PLT Ranges header"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_PLTPetite", "PLT Petite link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_PLTShape", "PLT Shape link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_PLTSport", "PLT Sport link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_PLTPremium", "PLT Premium link"
+	run Utils_Utilities.CheckForImage "NavBarClothingTablet/lk_PLTSloganStyle", "PLT Slogan Style link"
+	//Tap the Clothing button again to close the submenu
+	Tap "NavBarTablet/lk_Clothing"
+	Stop using Omega13
+end CheckClothingTablet
+
+(*
+Function - CheckClothingMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under Clothing are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckClothingMobile
+	Start using Omega13
+	//Tap the Clothing button to open submenu
+	Tap "NavBarMobile/lk_Clothing"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_ViewAll", "View All clothing link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_DressesFrom8", "Dresses - From £8 link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_TopsFrom4", "Tops - From £4 link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_Bodysuits", "Bodysuits link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_CropTopsBralets", "Crop Tops & Bralets link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_CoatsJackets", "Coats & Jackets link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_Knitwear", "Knitwear link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_Jumpsuits", "Jumpsuits link"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_Jeans"
+	run Utils_Utilities.CheckForImage "NavBarClothingMobile/lk_Playsuits", "Playsuits link"
+	//Tap the Clothing button again to close the submenu
+	Tap "NavBarMobile/lk_Clothing"
+	Stop using Omega13
+end CheckClothingMobile
+
+(*
+Function - CheckDressesTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under Dresses are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckDressesTablet
+	Start using Omega13
+	//Tap the Dresses button to open submenu
+	Tap "NavBarTablet/lk_Dresses"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/t_DressesHeader", "Dresses header"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_ViewAll", "View All dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_GoingOutDresses", "Going Out Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_PartyDresses", "Party Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_PromDresses", "Prom Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_BodyconDresses", "Bodycon Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_TShirtDresses", "TShirt Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_DayDresses", "Day Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_LaceDresses", "Lace Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_WeddingGuestDresses", "Wedding Guest Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_SkaterDresses", "Skater Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_MiniDresses", "Mini Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_MidiDresses", "Midi Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_MaxiDresses", "Maxi Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_LittleBlackDresses", "Little Black Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_LittleWhiteDresses", "Little White Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_BandageDresses", "Bandage Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_JumperDresses", "Jumper Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_ShirtDresses", "Shirt Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_CelebDresses", "Celeb Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesTablet/lk_SALEDresses", "Sale Dresses link"
+	//Tap the Dresses button again to close the submenu
+	Tap "NavBarTablet/lk_Dresses"
+	Stop using Omega13
+end CheckDressesTablet
+
+(*
+Function - CheckDressesMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under Dresses are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckDressesMobile
+	Start using Omega13
+	//Tap the Dresses button to open submenu
+	Tap "NavBarMobile/lk_Dresses"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_ViewAll", "View All dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_GoingOutDresses", "Going Out Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_PartyDresses", "Party Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_PromDresses", "Prom Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_BodyconDresses", "Bodycon Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_TShirtDresses", "TShirt Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_DayDresses", "Day Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_LaceDresses", "Lace Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarDressesMobile/lk_WeddingGuestDresses", "Wedding Guest Dresses link"
+	//Tap the Dresses button again to close the submenu
+	Tap "NavBarMobile/lk_Dresses"
+	Stop using Omega13
+end CheckDressesMobile
+
+(*
+Function - CheckShoesTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under Shoes are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckShoesTablet
+	Start using Omega13
+	//Tap the Shoes button to open submenu
+	Tap "NavBarTablet/lk_Shoes"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/t_ShoesHeader", "Shoes header"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ViewAll", "View All shoes link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_Boots", "Boots link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/Lk_Heels", "Heels link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_Flats", "Flats link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_SandalsFrom4", "Sandals - From £4 link" 
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_SaleShoes", "SALE Shoes link" 
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/t_ShopBySizeHeader", "Shop By Size header"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk2", "Shoe UK 2 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk3", "Shoe UK 3 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk4", "Shoe UK 4 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk5", "Shoe UK 5 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk6", "Shoe UK 6 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk7", "Shoe UK 7 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_ShoeUk8", "Shoe UK 8 link"
+	run Utils_Utilities.CheckForImage "NavBarShoesTablet/lk_SALEShoesBySize", "Sale Shoes By Size link"
+	//Tap the Shoes button again to close the submenu
+	Tap "NavBarTablet/lk_Shoes"
+	Stop using Omega13
+end CheckShoesTablet
+
+(*
+Function - CheckShoesMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under Shoes are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckShoesMobile
+	Start using Omega13
+	//Tap the Shoes button to open submenu
+	Tap "NavBarMobile/lk_Shoes"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarShoesMobile/lk_ViewAll", "View All shoes link"
+	run Utils_Utilities.CheckForImage "NavBarShoesMobile/lk_Boots", "Boots link"
+	run Utils_Utilities.CheckForImage "NavBarShoesMobile/Lk_Heels", "Heels link"
+	run Utils_Utilities.CheckForImage "NavBarShoesMobile/lk_Flats", "Flats link"
+	run Utils_Utilities.CheckForImage "NavBarShoesMobile/lk_SandalsFrom4", "Sandals - From £4 link" 
+	run Utils_Utilities.CheckForImage "NavBarShoesMobile/lk_SaleShoes", "SALE Shoes link" 
+	//Tap the Shoes button again to close the submenu
+	Tap "NavBarMobile/lk_Shoes"
+	Stop using Omega13
+end CheckShoesMobile
+
+(*
+Function - CheckBeautyTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under Beauty are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckBeautyTablet
+	Start using Omega13
+	//Tap the Beauty button to open submenu
+	Tap "NavBarTablet/lk_Beauty"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/t_BeautyHeader", "Beauty header"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_ViewAll", "View All beauty link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Face", "Face link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Eyes", "Eyes link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Lips", "Lips link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Brows", "Brows link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Nails", "Nails link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Body", "Body link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Hair", "Hair link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_ToolsAccessories", "Tools & Accessories link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/t_BeautyBrandsHeader", "Beauty Brands header"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_ViewAllBrands", "View All brands link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_BeauBelleBrushes", "Beau Belle Brushes link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_BeautyWorks", "Beauty Works link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_ConcreteMinerals", "Concrete Minerals link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_ContourCosmetics", "Contour Cosmetics link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Eylure", "Eylure link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_GypsyShrine", "Gypsy Shrine link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_HighDefinitionBeauty", "High Definition Beauty link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_LottieLondon", "Lottie London link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_MDMFlow", "MDM Flow link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_NCLA", "NCLA link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_NikoPro", "Niko Pro link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_PeachesCream", "Peaches & Cream link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Pretty", "Pretty link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Sleek", "Sleek link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_SosuBySJ", "Sosu By SJ link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Spectrum", "Spectrum link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_StMoritz", "St Moritz link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Sunkissed", "Sunkissed link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyTablet/lk_Technic", "Technic link"
+	//Tap the Beauty button again to close the submenu
+	Tap "NavBarTablet/lk_Beauty"
+	Stop using Omega13
+end CheckBeautyTablet
+
+(*
+Function - CheckBeautyMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under Beauty are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckBeautyMobile
+	Start using Omega13
+	//Tap the Beauty button to open submenu
+	Tap "NavBarMobile/lk_Beauty"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_ViewAll", "View All beauty link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_Face", "Face link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_Eyes", "Eyes link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_Lips", "Lips link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_Brows", "Brows link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_Nails", "Nails link"
+	run Utils_Utilities.CheckForImage "NavBarBeautyMobile/lk_Body", "Body link"
+	//Tap the Beauty button again to close the submenu
+	Tap "NavBarMobile/lk_Beauty"
+	Stop using Omega13
+end CheckBeautyMobile
+
+(*
+Function - CheckAccessoriesTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under Accessories are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckAccessoriesTablet
+	Start using Omega13
+	//Tap the Accessories button to open submenu
+	Tap "NavBarTablet/lk_Accessories"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_ViewAll", "View All accessories link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Bags", "Bags link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Chokers", "Chokers link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Belts", "Belts link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Sunglasses", "Sunglasses link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_JewelleryFrom2", "Jewellery - From £2 link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Earrings", "Earrings link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Gifts", "Gifts link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Hats", "Hats link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Beauty", "Beauty link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_SocksAndTights", "Socks And Tights link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_Shapewear", "Shapewear link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_FancyDress", "Fancy Dress link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_HairAccessories", "Hair Accessories link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_PhoneAccessories", "Phone Accessories link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesTablet/lk_SALEAccessories", "Sale Accessories link"
+	//Tap the Accessories button again to close the submenu
+	Tap "NavBarTablet/lk_Accessories"
+	Stop using Omega13
+end CheckAccessoriesTablet
+
+(*
+Function - CheckAccessoriesMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under Accessories are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckAccessoriesMobile
+	Start using Omega13
+	//Tap the Accessories button to open submenu
+	Tap "NavBarMobile/lk_Accessories"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesMobile/lk_ViewAIl", "View All accessories link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesMobile/lk_Bags", "Bags link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesMobile/lk_Chokers", "Chokers link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesMobile/lk_Belts", "Belts link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesMobile/lk_Sunglasses", "Sunglasses link"
+	run Utils_Utilities.CheckForImage "NavBarAccessoriesMobile/lk_JewelleryFrom2", "Jewellery - From £2 link"
+	//Tap the Accessories button again to close the submenu
+	Tap "NavBarMobile/lk_Accessories"
+	Stop using Omega13
+end CheckAccessoriesMobile
+
+(*
+Function - CheckSaleTablet
+Author - Rory Cruickshank
+Date - 22/05/2017
+Purpose - Check that links under Sale are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckSaleTablet
+	Start using Omega13
+	//Tap the Sale button to open submenu
+	Tap "NavBarTablet/lk_Sale"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_ViewAllSALE", "View All Sale link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEDresses", "Sale Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALETops", "Sale Tops link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALECoatsJackets", "Sale Coats & Jackets link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEKnitwear", "Sale Knitwear link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEDenim", "Sale Denim link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEPlaysuitsJumpsuits", "Sale Playsuits & Jumpsuits link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALESkirts", "Sale Skirts link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEShorts", "Sale Shorts link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALETrousers", "Sale Trousers link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEAccessories", "Sale Accessories link"
+	run Utils_Utilities.CheckForImage "NavBarSaleTablet/lk_SALEShoes", "Sale Shoes link"
+	//Tap the Sale button again to close the submenu
+	Tap "NavBarTablet/lk_Sale"
+	Stop using Omega13
+end CheckSaleTablet
+
+(*
+Function - CheckSaleMobile
+Author - Rory Cruickshank
+Date - 19/05/2017
+Purpose - Check that links under Sale are displayed correctly
+Arguments - 
+Returns - 
+*)
+to CheckSaleMobile
+	Start using Omega13
+	//Tap the Sale button to open submenu
+	Tap "NavBarMobile/lk_Sale"
+	//Check that all links are displayed as expected
+	run Utils_Utilities.CheckForImage "NavBarSaleMobile/lk_ViewAllSale", "View All Sale link"
+	run Utils_Utilities.CheckForImage "NavBarSaleMobile/lk_SaleDresses", "Sale Dresses link"
+	run Utils_Utilities.CheckForImage "NavBarSaleMobile/lk_SaleTops", "Sale Tops link"
+	run Utils_Utilities.CheckForImage "NavBarSaleMobile/lk_SaleCoatsJackets", "Sale Coats & Jackets link"
+	run Utils_Utilities.CheckForImage "NavBarSaleMobile/lk_SaleKnitwear", "Knitwear link"
+	//Tap the Sale button again to close the submenu
+	Tap "NavBarMobile/lk_Sale"
+	Stop using Omega13
+end CheckSaleMobile

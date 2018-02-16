@@ -1,0 +1,27 @@
+﻿(*
+Function - Case_Australia_iPadAir_Safari_Guest_Bag_IncreaseItems
+Author - Rory Cruickshank
+Date - 03/07/2017
+Purpose - Add an item to the shopping bag, then amend the total number of items in the bag
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by loading our homepage//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "Australia"
+
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesTablet
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+Set numberOfItems to the result
+//Navigate to shopping bag and increase the first item by one
+Tap "NavBarTablet/lk_Basket"
+run Mthds_ShoppingBag.IncreaseOrDecreaseItemsTablet numberOfItems, "Increase", "First Item", 0
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

@@ -1,0 +1,37 @@
+﻿(*
+Function - Case_Australia_iPadAir_Safari_LoginAtStart_Bag_RemoveItems
+Author - Rory Cruickshank
+Date - 03/07/2017
+Purpose - Add items to the shopping bag, then amend the total number of items in the bag
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "Australia"
+
+//Navigate to the Login page and log in
+run Utils_Utilities.CheckForImage "NavBarTablet/lk_Login", "Login link"
+Click "NavBarTablet/lk_Login"
+run Mthds_LoginPage.LoginPageTablet "testAUS@email.com", "P@ssw0rd", "Login Page"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesTablet
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+set numberOfItems to the result
+//Navigate to Boots and add an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Shoes", "NavBarShoesTablet/lk_Boots", "NavigationLandingPagesTablet/t_BootsHeader", "Boots header"
+run Mthds_AddAnItem.AddAnItem "Tablet", 4, 8, numberOfItems
+set numberOfItems to the result
+//Navigate to shopping bag and remove the second item
+Tap "NavBarTablet/lk_Basket"
+run Mthds_ShoppingBag.IncreaseOrDecreaseItemsTablet numberOfItems, "Increase", "Second Item", 0
+set numberOfItems to the result
+run Mthds_ShoppingBag.IncreaseOrDecreaseItemsTablet numberOfItems, "Remove", "Second Item", 2
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

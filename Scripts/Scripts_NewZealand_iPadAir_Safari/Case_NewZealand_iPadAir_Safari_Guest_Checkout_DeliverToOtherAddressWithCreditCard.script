@@ -1,0 +1,37 @@
+﻿(*
+Function - Case_NewZealand_iPadAir_Safari_Guest_Checkout_DeliverToOtherAddressWithCreditCard
+Author - Rory Cruickshank
+Date - 06/07/2017
+Purpose - Add items to the shopping bag, then add a new delivery address and checkout using credit card
+Arguments - numberOfItems, forwardDate, expiryMonth, expiryYear, uniqueNumber
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put date + 1 year into forwardDate
+Set forwardDate.format to "%d%m%y"
+put (month of forwardDate) into expiryMonth
+put (year of forwardDate) into expiryYear
+put the seconds into uniqueNumber
+
+//Start by loading our homepage//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "New Zealand"
+
+//Navigate to Tops and select an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Clothing", "NavBarClothingTablet/lk_TopsFrom4", "NavigationLandingPagesTablet/t_TopsHeader", "Tops header"
+run Mthds_AddAnItem.AddAnItem "Tablet", 8, 16, numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarTablet/lk_Basket"
+Tap "ShoppingBagTablet/bt_ProceedToCheckout"
+run Mthds_Checkout.EnterAddressTablet "iPadAir", "Barbara", "Wright", uniqueNumber & "test@email.com", "01234567890", "23", "November", "2005", "New Zealand", "M407FS", "Yes", "PRETTYLITTLETHING.COM", "Pollard Street East", "MANCHESTER", "No", "No", "Yes", "Waikato"
+run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/cb_UseAsMyDefaultShippingAddress", "'Use as my default shipping address' checkbox", 5, "Log"
+run Mthds_Checkout.EnterAddressTablet "iPadAir", "Susan", "Foreman", , "01234567890", , , , "New Zealand", "M407FS", "Yes", "PRETTYLITTLETHING.COM", "Pollard Street East", "MANCHESTER", , , , "Waikato"
+run Mthds_Checkout.DeliveryMethodTablet "iPadAir", "Australia Standard"
+run Mthds_Checkout.PaymentMethodTablet "Pay by Credit or Debit Card"
+run Mthds_Checkout.CouponCodeTablet "", "No", "Yes"
+run Mthds_Checkout.PlaceOrderTablet "Pay by Credit or Debit Card", "4444333322221111", expiryMonth, expiryYear, "123", "Barbara Wright"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

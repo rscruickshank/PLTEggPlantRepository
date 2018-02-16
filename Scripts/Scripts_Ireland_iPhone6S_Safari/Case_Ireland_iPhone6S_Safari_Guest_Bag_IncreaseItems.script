@@ -1,0 +1,26 @@
+﻿(*
+Function - Case_Ireland_iPhone6S_Safari_Guest_Bag_IncreaseItems
+Author - Rory Cruickshank
+Date - 04/07/2017
+Purpose - Add items to the shopping bag, then amend the total number of items in the bag
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile", "Ireland"
+
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", 8, 16, numberOfItems
+set numberOfItems to the result
+//Navigate to shopping bag and increase the second item by one
+run Mthds_ShoppingBag.IncreaseOrDecreaseItemsMobile 2, "Increase", "First Item", 0
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

@@ -1,0 +1,20 @@
+﻿(*
+Function - Case_UK_iPhone6S_Chrome_Guest_Product_AddAnItemToBag
+Author - Rory Cruickshank
+Date - 30/05/2017
+Purpose - Navigate to Sale Dresses and add an item to the shopping bag
+Arguments - 
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+//Start by loading our homepage
+run Mthds_PageLoad.DevicePageLoad "Chrome", "Mobile"
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", 8, 16, numberOfItems
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

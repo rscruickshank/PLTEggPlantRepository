@@ -1,0 +1,57 @@
+﻿(*
+Function - NavigateThroughPagesMobile
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Check that links on the NavBar direct to the correct pages
+Arguments - 
+Returns - 
+*)
+to NavigateThroughPagesMobile
+	Start using Omega13
+	run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_NewIn", "NavBarNewInMobile/lk_NewInClothing", "NavigationLandingPagesMobile/t_NewInClothingHeader", "New In Clothing header"
+	run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Dresses", "NavBarDressesMobile/lk_PartyDresses", "NavigationLandingPagesMobile/t_PartyDressesHeader", "Party Dresses header"
+	run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Shoes", "NavBarShoesMobile/lk_Boots", "NavigationLandingPagesMobile/t_BootsHeader", "Boots header"
+	run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Accessories", "NavBarAccessoriesMobile/lk_Bags", "NavigationLandingPagesMobile/t_BagsHeader", "Bags header"
+	run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Clothing", "NavBarClothingMobile/lk_TopsFrom4","NavigationLandingPagesMobile/t_Topsfrom4Header" , "Tops header"
+	Stop using Omega13
+end NavigateThroughPagesMobile
+
+(*
+Function - NavigateThroughPagesTablet
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Check that links on the NavBar direct to the correct pages
+Arguments - 
+Returns - 
+*)
+to NavigateThroughPagesTablet
+	Start using Omega13
+	run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_NewIn", "NavBarNewInTablet/lk_NewInClothing", "NavigationLandingPagesTablet/t_NewInClothingHeader", "New In Clothing header"
+	run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Dresses", "NavBarDressesTablet/lk_PartyDresses", "NavigationLandingPagesTablet/t_PartyDressesHeader", "Party Dresses header"
+	run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Shoes", "NavBarShoesTablet/lk_Boots", "NavigationLandingPagesTablet/t_BootsHeader", "Boots header"
+	run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Accessories", "NavBarAccessoriesTablet/lk_Bags", "NavigationLandingPagesTablet/t_BagsPursesHeader", "Bags header"
+	//Tap "NavBarTablet/lk_Sale"
+	//run Utils_Utilities.CheckForImage "NavigationLandingPagesTablet/t_SaleHeader", "Sale Header"
+	//run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavigationLandingPagesTablet/t_SaleHeader", "NavBarSaleTablet/lk_SaleDresses", "NavigationLandingPagesTablet/t_SALEDressesHeader", "SALE Dresses header"
+	run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Clothing", "NavBarClothingTablet/lk_TopsFrom4", "NavigationLandingPagesTablet/t_TopsHeader", "Tops header"
+	Stop using Omega13
+end NavigateThroughPagesTablet
+
+(*
+Function - NavigateToNewPage
+Author - Rory Cruickshank
+Date - 18/05/2017
+Purpose - Handle opening the required submenu and navigating to the required page
+Arguments - device, menuItem, subMenuItem, landingPageHeader, headerDescription
+Returns - 
+*)
+to NavigateToNewPage device, menuItem, subMenuItem, landingPageHeader, headerDescription
+	Start using Omega13
+	if device = "Mobile" then
+		Tap "NavBarMobile/bt_BurgerMenu"
+	end if 
+	Tap menuItem
+	Tap subMenuItem
+	run Utils_Utilities.CheckForImage landingPageHeader, headerDescription
+	Stop using Omega13
+end NavigateToNewPage

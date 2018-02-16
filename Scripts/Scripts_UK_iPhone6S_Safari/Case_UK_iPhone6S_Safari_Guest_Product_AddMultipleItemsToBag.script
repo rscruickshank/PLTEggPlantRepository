@@ -1,0 +1,27 @@
+﻿(*
+Function - Case_UK_iPhone6S_Safari_Guest_Product_AddMultipleItemsToBag
+Author - Rory Cruickshank
+Date - 31/05/2017
+Purpose - Navigate to Sale Dresses and add an item to the shopping bag, then navigate to Party Dresses and add another item
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+
+
+//Start by clearing cache and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile"
+
+//Navigate through each of the pages in turn and check that the correct page is displayed
+run Mthds_PageNavigation.NavigateThroughPagesMobile
+//Add an item to the shopping bag
+run Mthds_AddAnItem.AddAnItem "iPhone", 8, 16, numberOfItems
+//Navigate to Boots and add an item
+run Mthds_PageNavigation.NavigateToNewPage "Mobile", "NavBarMobile/lk_Shoes", "NavBarShoesMobile/lk_Boots", "NavigationLandingPagesMobile/t_BootsHeader", "Boots header"
+run Mthds_AddAnItem.AddAnItem "iPhone", 4, 8, numberOfItems
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone"

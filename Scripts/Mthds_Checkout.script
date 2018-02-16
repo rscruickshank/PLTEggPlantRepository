@@ -1,0 +1,692 @@
+﻿(*
+Function - EnterAddressTablet
+Author - Rory Cruickshank
+Date - 08/06/2017
+Purpose - Add items to the shopping bag, then amend the total number of items in the bag
+Arguments - device, firstName, lastName, email, telephone, birthDate, birthMonth, birthYear, country, postcode, addressFinder, streetAddress1, streetAddress2, city, createAccount, deliverToSameAddress, useAsDefaultAddress
+Returns - 
+*)
+to EnterAddressTablet device, firstName, lastName, email, telephone, birthDate, birthMonth, birthYear, country, postcode, addressFinder, streetAddress1, streetAddress2, city, createAccount, deliverToSameAddress, useAsDefaultAddress, password, confirmPassword, region
+	Start using Omega13
+	//Set the counter variable
+	Set counter to 0
+	
+	//Check that the page has loaded
+	run Utils_Utilities.CheckForImage "CheckoutTablet/tb_FirstName", "First name textbox"
+	//Check if we're adding the birthdate in the UK location
+	if birthdate.length > 0 and country is in "United Kingdom, New Zealand, Australia" then
+		Tap "CheckoutTablet/lb_BirthYear"
+		run Utils_Utilities.SelectFromDropdown device, birthYear, "1957", "Up", 30, 54, 644, 1756		
+		Tap "CheckoutTablet/lb_BirthDate"
+		run Utils_Utilities.SelectFromDropdown device, birthDate, "31", "Up", 22, 74, 648, 1674
+		Tap "CheckoutTablet/lb_BirthMonth"
+		run Utils_Utilities.SelectFromDropdown device, birthMonth, "December", "Up", 30, 445, 654, 1652
+	end if
+	//Input name and email details
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_FirstName", firstName, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_LastName", lastName, "iOSKeyboard/SafariCloseKeyboard"
+	//Check if we need to add the email address
+	if email.length > 0 then
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_EmailAddress", email, "iOSKeyboard/SafariCloseKeyboard"
+	end if
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_Telephone", telephone, "iOSKeyboard/SafariCloseKeyboard"	
+	//Check that we can still see the address fields
+	run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/cb_UseAsMyDefaultBillingAddress", "'Use as my default billing address' checkbox", 5, "Log"
+	//Check if the required country is displayed
+	if not ImageFound(5, text: country) then
+		set currentCountry to ReadText("CheckoutTablet/lb_Country")
+		//Open the listbox and search for our required country
+		Tap "CheckoutTablet/lb_Country"
+		//Now determine which way we need to scroll to find our country
+		if country comes before currentCountry then
+			run Utils_Utilities.SelectFromDropdown device, country, "Afghanistan", "Down", 30, 445, 654, 1652
+		else if country comes after currentCountry then
+			run Utils_Utilities.SelectFromDropdown device, country, "Zimbabwe", "Up", 30, 445, 654, 1652
+		end if
+	end if
+	//Set the address fields accordingly
+	run Utils_Utilities.SetAddress device, "CheckoutTablet/tb_PostalZipCode", postcode, country, addressFinder, "CheckoutTablet/bt_FindAddress", "CheckoutTablet/lb_PleaseSelectYourAddress", 17, 56, 648, 1392, "CheckoutTablet/tb_Address1", streetAddress1, "CheckoutTablet/tb_Address2", streetAddress2, "CheckoutTablet/tb_City", city, "CheckoutTablet/lb_StateProvince", region
+	//Check if we're adding the birthdate in the US location
+	if birthdate.length > 0 and country is in "United States" then
+		Tap "CheckoutTablet/lb_BirthYear/lb_BirthYearUS"
+		run Utils_Utilities.SelectFromDropdown device, birthYear, "1957", "Up", 30, 54, 644, 1756		
+		Tap "CheckoutTablet/lb_BirthDate"
+		run Utils_Utilities.SelectFromDropdown device, birthDate, "31", "Up", 22, 74, 648, 1674
+		Tap "CheckoutTablet/lb_BirthMonth"
+		run Utils_Utilities.SelectFromDropdown device, birthMonth, "December", "Up", 30, 445, 654, 1652
+	end if
+	//Check that the 'Use As My Default Billing Address' checkbox is displayed
+	run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/cb_UseAsMyDefaultBillingAddress", "'Use as my default billing address' checkbox", 5, "Log", , , ,
+	//Check if we are expecting the 'create an account' checkbox
+	if createAccount.length > 0 then
+		run Utils_Utilities.SetElementState "Checkbox", createAccount, "CheckoutTablet/cb_CreateAnAccountForLaterUse/cb_CreateAnAccountForLaterUseSelected", "CheckoutTablet/cb_CreateAnAccountForLaterUse/cb_CreateAnAccountForLaterUseUnselected"
+		if createAccount = "Yes" then
+			run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_Password", password, "iOSKeyboard/SafariCloseKeyboard"
+			run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_ConfirmPassword", confirmPassword, "iOSKeyboard/SafariCloseKeyboard"
+		end if
+	end if
+	//Check if we are expecting the 'deliver to the same address' checkbox
+	if deliverToSameAddress.length > 0 then
+		//This has changed to 'Ship to the same address' for some countries
+		if country is in "Ireland" then
+			run Utils_Utilities.SetElementState "Checkbox", deliverToSameAddress, "CheckoutTablet/cb_DeliverToTheSameAddress/cb_DeliverToTheSameAddressSelected", "CheckoutTablet/cb_DeliverToTheSameAddress/cb_DeliverToTheSameAddressUnselected"
+		else
+			run Utils_Utilities.SetElementState "Checkbox", deliverToSameAddress, "CheckoutTablet/cb_ShipToTheSameAddress/cb_ShipToTheSameAddressSelected", "CheckoutTablet/cb_ShipToTheSameAddress/cb_ShipToTheSameAddressUnselected"
+		end if	
+	end if
+	//Check if we are expecting the 'use as my default billing address' checkbox
+	if useAsDefaultAddress.length > 0 then
+		run Utils_Utilities.SetElementState "Checkbox", useAsDefaultAddress, "CheckoutTablet/cb_UseAsMyDefaultBillingAddress/cb_UseAsMyDefaultBillingAddressSelected", "CheckoutTablet/cb_UseAsMyDefaultBillingAddress/cb_UseAsMyDefaultBillingAddressUnselected"
+	end if
+	Stop using Omega13
+end EnterAddressTablet
+
+(*
+Function - EnterAddressMobile
+Author - Rory Cruickshank
+Date - 19/06/2017
+Purpose - Enter details in all of the address fields on mobile
+Arguments - device, telephone, birthDate, birthMonth, birthYear, country, postcode, addressFinder, streetAddress1, streetAddress2, city, deliverToSameAddress, newAddress, county
+Returns - 
+*)
+to EnterAddressMobile device, telephone, birthDate, birthMonth, birthYear, country, postcode, addressFinder, streetAddress1, streetAddress2, city, deliverToSameAddress, newAddress, county
+	Start using Omega13
+	//Check if this is a new address 
+	if newAddress = "Yes" then
+		run Utils_Utilities.CheckForImage "CheckoutMobile/t_AddANewAddressHeader", "'Add a new address' header"
+	else
+		//Check that the page has loaded
+		run Utils_Utilities.CheckForImage "CheckoutMobile/t_WhatAreYourBillingDetailsHeader", "'Billing Details' header"
+	end if
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_Telephone", telephone, "iOSKeyboard/SafariCloseKeyboard"
+	//Check if we're adding the birthdate
+	if birthdate.length > 0 then
+		Tap "CheckoutMobile/lb_BirthYear"
+		run Utils_Utilities.SelectFromDropdown device, birthYear, 1957, "Up", 2, 814, 750, 1334
+		Tap "CheckoutMobile/lb_BirthDate"
+		run Utils_Utilities.SelectFromDropdown device, birthDate, 31, "Up", 2, 814, 750, 1334
+		Tap "CheckoutMobile/lb_BirthMonth"
+		run Utils_Utilities.SelectFromDropdown device, birthMonth, "December", "Up", 2, 814, 750, 1334
+	end if
+	//Check if we need to change the country
+	if ImageFound(1, "CheckoutMobile/lb_Country") then
+		set currentCountry to ReadText("CheckoutMobile/lb_Country")
+		if country comes before currentCountry then
+			Tap "CheckoutMobile/lb_Country"
+			run Utils_Utilities.SelectFromDropdown device, country, "Afghanistan", "Down", 2, 814, 750, 1334
+		else if country comes after currentCountry then
+			Tap "CheckoutMobile/lb_Country"
+			run Utils_Utilities.SelectFromDropdown device, country, "Zimbabwe", "Up", 2, 814, 750, 1334
+		else
+			Log "current selected country " & currentCountry & " matches expected country " & country
+			
+		end if	
+	end if
+	//Set the address fields accordingly
+	run Utils_Utilities.SetAddress device, "CheckoutMobile/tb_PostalZipCode", postcode, country, addressFinder, "CheckoutMobile/bt_FindAddress", "CheckoutMobile/lb_PleaseSelectYourAddress", 2, 814, 750, 1334, "CheckoutMobile/tb_Address1", streetAddress1, "CheckoutMobile/tb_Address2", streetAddress2, "CheckoutMobile/tb_City", city, "CheckoutMobile/tb_County", county
+	
+	//Check if we are expecting the 'deliver to the same address' checkbox
+	if deliverToSameAddress.length > 0 then
+		run Utils_Utilities.SetElementState "Checkbox", deliverToSameAddress, "CheckoutMobile/cb_SameAsBillingAddress/cb_SameAsBillingAddressSelected", "CheckoutMobile/cb_SameAsBillingAddress/cb_SameAsBillingAddressUnselected"
+	end if
+	if newAddress = "Yes" then
+		Tap "CheckoutMobile/bt_AddThisAddress"
+		Wait 5
+		Tap "CheckoutMobile/bt_UseThisAddress"
+	else
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/bt_Continue", "'Continue' button", 5, "Tap"
+	end if
+	Stop using Omega13
+end EnterAddressMobile
+
+(*
+Function - NewDeliveryAddressMobile
+Author - Rory Cruickshank
+Date - 27/06/2017
+Purpose - Add a separate delivery address
+Arguments - 
+Returns - 
+*)
+to NewDeliveryAddressMobile telephone, postcode, editAddress, address1, address2, city
+	Start using Omega13
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_Telephone", telephone, "iOSKeyboard/SafariCloseKeyboard"	
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_PostalZipCode", postcode, "iOSKeyboard/SafariCloseKeyboard"
+	Tap "CheckoutMobile/bt_FindAddress"
+	if editAddress = "Yes" then
+		Tap "CheckoutMobile/bt_EditAddress"
+	end if
+	Stop using Omega13
+end NewDeliveryAddressMobile
+
+(*
+Function - CheckAddressFieldsNotDisplayedTablet
+Author - Rory Cruickshank
+Date - 22/06/2017
+Purpose - Check that name and address fields are not displayed as not expected
+Arguments - 
+Returns - 
+*)
+to CheckAddressFieldsNotDisplayedTablet
+	Start using Omega13
+	if not ImageFound (5, "CheckoutTablet/tb_FirstName") then
+		LogSuccess "Name and address not displayed and not expected"
+	else 
+		LogError "Name and address fields displayed but not expected"
+	end if
+	Stop using Omega13
+end CheckAddressFieldsNotDisplayedTablet
+
+(*
+Function - LoggedInSelectNewAddressTablet
+Author - Rory Cruickshank
+Date - 23/06/2017
+Purpose - When logged in, select the required option to add a new address
+Arguments - addressType
+Returns - 
+*)
+to LoggedInSelectNewAddressMobile addressType
+	Start using Omega13
+	//Select our required address type
+	if addressType = "Billing" then
+		run Utils_Utilities.CheckForImage "CheckoutMobile/bt_AddEdit", "'Add/Edit' button"
+		Tap "CheckoutMobile/bt_AddEdit"
+	else if addressType = "Delivery" then
+		run Utils_Utilities.CheckForImage "CheckoutMobile/lb_SelectDeliveryAddress", "'Delivery address' listbox"
+		Tap "CheckoutTablet/lb_SelectDeliveryAddress"
+	else 
+		LogError "Address type '" & addressType & "' not recognised"
+	end if
+	//Tap the 'new address' button
+	Tap "CheckoutTablet/bt_NewAddress"
+	Stop using Omega13
+end LoggedInSelectNewAddressMobile
+
+(*
+Function - LoggedInSelectNewAddressTablet
+Author - Rory Cruickshank
+Date - 23/06/2017
+Purpose - When logged in, select the required option to add a new address
+Arguments - addressType
+Returns - 
+*)
+to LoggedInSelectNewAddressTablet addressType
+	Start using Omega13
+	//Select our required address type
+	if addressType = "Billing" then
+		run Utils_Utilities.CheckForImage "CheckoutTablet/lb_SelectBillingAddress", "'Billing address' listbox"
+		Tap "CheckoutTablet/lb_SelectBillingAddress"
+	else if addressType = "Delivery" then
+		run Utils_Utilities.CheckForImage "CheckoutTablet/lb_SelectDeliveryAddress", "'Delivery address' listbox"
+		Tap "CheckoutTablet/lb_SelectDeliveryAddress"
+	else 
+		LogError "Address type '" & addressType & "' not recognised"
+	end if
+	//Tap the 'new address' button
+	Tap "CheckoutTablet/bt_NewAddress"
+	Stop using Omega13
+end LoggedInSelectNewAddressTablet 
+
+(*
+Function - DeliveryMethodTablet
+Author - Rory Cruickshank
+Date - 09/06/2017
+Purpose - Select the required delivery method
+Arguments - device, deliveryMethod, nominatedDay
+Returns - 
+*)
+to DeliveryMethodTablet device, deliveryMethod, nominatedDay
+	Start using Omega13
+	//Ensure that we're at the top of the screen
+	run Utils_Utilities.ScrollUntilFound "Down", "CheckoutTablet/t_DeliveryMethodHeader", "'Delivery Method' header", 5, "Log", , , ,
+	//Choose the required method and select the relevant radio button
+	if deliveryMethod = "UK Next Day" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_UKNextDayDelivery/rb_UKNextDayDeliverySelected", "CheckoutTablet/rb_UKNextDayDelivery/rb_UKNextDayDeliveryUnselected"
+	else if deliveryMethod = "UK Saver" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_UKSaverDelivery/rb_UKSaverDeliverySelected", "CheckoutTablet/rb_UKSaverDelivery/rb_UKSaverDeliveryUnselected"
+	else if deliveryMethod = "Collect Plus" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_CollectPlusStandardDelivery/rb_CollectPlusStandardDeliverySelected", "CheckoutTablet/rb_CollectPlusStandardDelivery/rb_CollectPlusStandardDeliveryUnselected"
+		Tap "CheckoutTablet/bt_CollectPlusFindNearestPickupPoint"
+		//Select the first location
+		If ImageFound(15, "CheckoutTablet/rb_CollectPlusFirstLocation") then
+			Tap "CheckoutTablet/rb_CollectPlusFirstLocation"
+			Tap "CheckoutTablet/bt_CollectPlusConfirmLocation"
+		else
+			LogError "Collect Plus first location radio button not displayed"
+		end if
+	else if deliveryMethod = "Doddle Next Day" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_DoddleNextDay2pm/rb_DoddleNextDay2pmSelected", "CheckoutTablet/rb_DoddleNextDay2pm/rb_DoddleNextDay2pmUnselected"
+		Tap "CheckoutTablet/bt_DoddleFindNearestPickupPoint"
+		//Select the first location
+		If ImageFound(15, "CheckoutTablet/rb_DoddleSelectFirstLocation") then
+			Tap "CheckoutTablet/rb_DoddleSelectFirstLocation"
+			Tap "CheckoutTablet/bt_DoddleConfirmLocation"
+		else
+			LogError "Doddle first location radio button not displayed"
+		end if
+	else if deliveryMethod = "Next Day Evening" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_NextDayEveningShipping/rb_NextDayEveningShippingSelected", "CheckoutTablet/rb_NextDayEveningShipping/rb_NextDayEveningShippingUnselected"
+	else if deliveryMethod = "UK Nominated Day" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_UKNominatedDay/rb_UKNominatedDaySelected", "CheckoutTablet/rb_UKNominatedDay/rb_UKNominatedDayUnselected"
+		Tap "CheckoutTablet/lb_PreferredDeliveryDate"
+		run Utils_Utilities.SelectFromDropdown device, nominatedDay, "31", "Up", 424, 357, 1064, 1411
+	else if deliveryMethod = "PLT Royalty" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_PLTRoyalty1Year/rb_PLTRoyalty1YearSelected", "CheckoutTablet/rb_PLTRoyalty1Year/rb_PLTRoyalty1YearUnselected" 
+	else if deliveryMethod = "USA Saver" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_USASaver/rb_USASaverSelected", "CheckoutTablet/rb_USASaver/rb_USASaverUnselected"
+	else if deliveryMethod = "USA Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_USAStandard/rb_USAStandardSelected", "CheckoutTablet/rb_USAStandard/rb_USAStandardUnselected"
+	else if deliveryMethod = "USA Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_USAExpress/rb_USAExpressSelected", "CheckoutTablet/rb_USAExpress/rb_USAExpressUnselected"
+	else if deliveryMethod = "Australia Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_AustraliaStandard/rb_AustraliaStandardSelected", "CheckoutTablet/rb_AustraliaStandard/rb_AustraliaStandardUnselected"
+	else if deliveryMethod = "Australia Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_AustraliaExpress/rb_AustraliaExpressSelected", "CheckoutTablet/rb_AustraliaExpress/rb_AustraliaExpressUnselected"
+	else if deliveryMethod = "New Zealand Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_NewZealandSaver/rb_NewZealandSaverSelected", "CheckoutTablet/rb_NewZealandSaver/rb_NewZealandSaverUnselected"
+	else if deliveryMethod = "New Zealand Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_NewZealandExpress/rb_NewZealandExpressSelected", "CheckoutTablet/rb_NewZealandExpress/rb_NewZealandExpressUnselected"
+	else
+		LogWarning "Delivery method '" & deliveryMethod & "' does not match any known options. 'UK Next Day Delivery' selected by default"
+	end if
+	Stop using Omega13
+end DeliveryMethodTablet
+
+(*
+Function - DeliveryMethodMobile
+Author - Rory Cruickshank
+Date - 20/06/2017
+Purpose - Select the required delivery method
+Arguments - deliveryMethod, receiveOffers, createAccount, nominatedDay
+Returns - 
+*)
+to DeliveryMethodMobile device, deliveryMethod, receiveOffers, createAccount, nominatedDay, loggedIn
+	Start using Omega13
+	if loggedIn = "No" then
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/t_GetDiscountsHeader", "'Get Discounts' header", 5, "Log"
+	else if loggedIn = "Yes" then
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/t_ReviewYourOrderHeader", "'Review Your Order' header", 5, "Log"	
+	else 
+		LogError "Value for loggedIn not recognised. Expected 'Yes' or 'No', but actual value: " & loggedIn
+	end if
+	//Choose the required method and select the relevant radio button
+	if deliveryMethod = "UK Next Day" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_UKNextDayDelivery/rb_UKNextDayDeliverySelected", "CheckoutMobile/rb_UKNextDayDelivery/rb_UKNextDayDeliveryUnselected"
+	else if deliveryMethod = "UK Saver" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_UKSaverDelivery/rb_UKSaverDeliverySelected", "CheckoutMobile/rb_UKSaverDelivery/rb_UKSaverDeliveryUnselected"
+	else if deliveryMethod = "Collect Plus" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_CollectPlusStandardDelivery/rb_CollectPlusStandardDeliverySelected", "CheckoutMobile/rb_CollectPlusStandardDelivery/rb_CollectPlusStandardDeliveryUnselected"
+		Tap "CheckoutMobile/bt_ChooseCollectPlusPoint"
+		Set the SearchRectangle to (3, 127, 774, 661)
+		//Select the first location
+		If ImageFound(15, "CheckoutMobile/bt_CollectPlusSelect") then
+			DoubleTap "CheckoutMobile/bt_CollectPlusSelect"
+		else
+			LogError "Collect Plus first location button not displayed"
+		end if
+		Set the SearchRectangle to ()
+	else if deliveryMethod = "Doddle" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_DoddleNextDay2pm/rb_DoddleNextDay2pmSelected", "CheckoutMobile/rb_DoddleNextDay2pm/rb_DoddleNextDay2pmUnselected"
+		Tap "CheckoutMobile/bt_DoddleFindNearestPickupPoint"
+		Set the SearchRectangle to (3, 127, 774, 761)
+		//Select the first location
+		If ImageFound(15, "CheckoutMobile/bt_DoddleSelect") then
+			DoubleTap "CheckoutMobile/bt_DoddleSelect"
+		else
+			LogError "Doddle first location button not displayed"
+		end if
+		Set the SearchRectangle to ()
+	else if deliveryMethod = "Next Day Evening" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_NextDayEveningShipping/rb_NextDayEveningShippingSelected", "CheckoutMobile/rb_NextDayEveningShipping/rb_NextDayEveningShippingUnselected"
+	else if deliveryMethod = "UK Nominated Day" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_UKNominatedDay/rb_UKNominatedDaySelected", "CheckoutMobile/rb_UKNominatedDay/rb_UKNominatedDayUnselected"
+		Tap "CheckoutMobile/lb_PreferredDeliveryDate"
+		run Utils_Utilities.SelectFromDropdown device, nominatedDay, 31, "Up", 2, 814, 750, 1334
+	else if deliveryMethod = "PLT Royalty" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_PLTRoyalty1Year/rb_PLTRoyalty1YearSelected", "CheckoutMobile/rb_PLTRoyalty1Year/rb_PLTRoyalty1YearUnselected" 
+	else if deliveryMethod = "Standard Delivery" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_StandardDelivery/rb_StandardDeliverySelected", "CheckoutMobile/rb_StandardDelivery/rb_StandardDeliveryUnselected"
+	else if deliveryMethod = "Ireland Next Day" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_IrelandNextDay/rb_IrelandNextDaySelected", "CheckoutMobile/rb_IrelandNextDay/rb_IrelandNextDayUnselected"
+	else if deliveryMethod = "France Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_FranceStandard/rb_FranceStandardSelected", "CheckoutMobile/rb_FranceStandard/rb_FranceStandardUnselected"
+	else if deliveryMethod = "France Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_FranceExpress/rb_FranceExpressSelected", "CheckoutMobile/rb_FranceExpress/rb_FranceExpressUnselected"
+	else if deliveryMethod = "USA Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_USAStandard/rb_USAStandardSelected", "CheckoutMobile/rb_USAStandard/rb_USAStandardUnselected"
+	else if deliveryMethod = "USA Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_USAExpress/rb_USAExpressSelected", "CheckoutMobile/rb_USAExpress/rb_USAExpressUnselected"
+	else if deliveryMethod = "USA Saver" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_USASaver/rb_USASaverSelected", "CheckoutMobile/rb_USASaver/rb_USASaverUnselected"
+	else if deliveryMethod = "New Zealand Saver" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_NewZealandSaver/rb_NewZealandSaverSelected", "CheckoutMobile/rb_NewZealandSaver/rb_NewZealandSaverUnselected"
+	else if deliveryMethod = "New Zealand Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_NewZealandExpress/rb_NewZealandExpressSelected", "CheckoutMobile/rb_NewZealandExpress/rb_NewZealandExpressUnselected"
+	else if deliveryMethod = "International Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_InternationalStandard/rb_InternationalStandardSelected", "CheckoutMobile/rb_InternationalStandard/rb_InternationalStandardUnselected"
+	else if deliveryMethod = "Australia Express" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_AustraliaExpress/rb_AustraliaExpressSelected", "CheckoutMobile/rb_AustraliaExpress/rb_AustraliaExpressUnselected"
+	else if deliveryMethod = "International Standard" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_AustraliaStandard/rb_AustraliaStandardSelected", "CheckoutMobile/rb_AustraliaStandard/rb_AustraliaStandardUnselected"
+	else
+		LogWarning "Delivery method '" & deliveryMethod & "' does not match any known options."
+	end if
+	
+	//Check if the checkboxes are to be handled
+	if receiveOffers.length > 0 then
+		//Scroll down as required and set the two checkboxes
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/bt_ContinueFromDelivery", "Continue button", 5, "Log", , , , 
+		run Utils_Utilities.SetElementState "Checkbox", receiveOffers, "CheckoutMobile/cb_ReceiveOffers/cb_ReceiveOffersSelected", "CheckoutMobile/cb_ReceiveOffers/cb_ReceiveOffersUnselected"
+		run Utils_Utilities.SetElementState "Checkbox", createAccount, "CheckoutMobile/cb_CreateAnAccount/cb_CreateAnAccountSelected", "CheckoutMobile/cb_CreateAnAccount/cb_CreateAnAccountUnselected"
+		//Wait for it to update
+		Wait 5
+		//Scroll down as required and click to continue
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/bt_ContinueFromDelivery/bt_ContinueFromDeliveryActive", "Continue button", 5, "Tap", , , , 
+	end if
+	Stop using Omega13
+end DeliveryMethodMobile
+
+(*
+Function - PaymentMethodTablet
+Author - Rory Cruickshank
+Date - 09/06/2017
+Purpose - Select the required payment method
+Arguments - paymentMethod
+Returns - 
+*)
+to PaymentMethodTablet paymentMethod
+	Start using Omega13
+	//Ensure that we can see the payment methods on the screen
+	run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/rb_PaypaI", "'Paypal' radio button", 5, "Log", , , ,
+	if paymentMethod = "Pay by Credit or Debit Card" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_PayByCreditOrDebitCardWP/rb_PayByCreditOrDebitCardWPSelected", "CheckoutTablet/rb_PayByCreditOrDebitCardWP/rb_PayByCreditOrDebitCardWPUnselected"
+	else if paymentMethod = "Cash on delivery" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_CashOnDelivery/rb_CashOnDeliverySelected", "CheckoutTablet/rb_CashOnDelivery/rb_CashOnDeliveryUnselected"
+	else if paymentMethod = "Paypal" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutTablet/rb_PaypaI/rb_PaypaISelected", "CheckoutTablet/rb_PaypaI/rb_PaypaIUnselected"
+	else
+		LogWarning "Payment method '" & paymentMethod & "' does not match any known options. 'Cash On Delivery' selected by default"
+	end if
+	Stop using Omega13
+end PaymentMethodTablet
+
+(*
+Function - PaymentMethodMobile
+Author - Rory Cruickshank
+Date - 20/06/2017
+Purpose - Select the required payment method
+Arguments - paymentMethod
+Returns - 
+*)
+to PaymentMethodMobile paymentMethod
+	Start using Omega13
+	//Ensure that we can see the payment methods on the screen
+	run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/bt_PlaceOrder", "'Place Order' button", 5, "Log", , , ,
+	if paymentMethod = "Pay by Credit or Debit Card" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_PayByCreditOrDebitCard/rb_PayByCreditOrDebitCardSelected", "CheckoutMobile/rb_PayByCreditOrDebitCard/rb_PayByCreditOrDebitCardUnselected"
+	else if paymentMethod = "Cash on delivery" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_CashOnDelivery/rb_CashOnDeliverySelected", "CheckoutMobile/rb_CashOnDelivery/rb_CashOnDeliveryUnselected"
+	else if paymentMethod = "Paypal" then
+		run Utils_Utilities.SetElementState "Radio button", "Yes", "CheckoutMobile/rb_Paypal/rb_PaypalSelected", "CheckoutMobile/rb_Paypal/rb_PaypalUnselected"
+	else if paymentMethod = "Not required" then
+		run Utils_Utilities.CheckForImage "CheckoutMobile/rb_NoPaymentInformationRequired", "'No payment information required' radio button"
+	else
+		LogWarning "Payment method '" & paymentMethod & "' does not match any known options. 'Cash On Delivery' selected by default"
+	end if
+	Stop using Omega13
+end PaymentMethodMobile
+
+(*
+Function - CouponCodeTablet
+Author - Rory Cruickshank
+Date - 09/06/2017
+Purpose - Input any coupons and handle checkboxes
+Arguments - couponCode, subscribe, receiveOffers
+Returns - 
+*)
+to CouponCodeTablet couponCode, subscribe, receiveOffers, currency, couponType
+	Start using Omega13
+	//Check if we need to handle the coupon code
+	if couponCode.length > 0 then
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_CouponCode", couponCode, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "CheckoutTablet/bt_ApplyCoupon"
+		//Ensure that we can see the full order
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/bt_PlaceOrder", "'Place Order' button", 5, "Log", , , ,
+		if couponType = "Shopping" then
+			//Now check that the discount has been applied
+			run Utils_Utilities.CheckForImage "CheckoutTablet/t_Subtotal", "'Subtotal' text"
+			run Utils_Utilities.CheckOrderValues "CheckoutTablet/t_Subtotal"
+			set subtotal to the result
+			set expectedDiscount to subtotal/5
+			run Utils_Utilities.CheckOrderValues "CheckoutTablet/t_Discount"
+			set actualDiscount to the result
+			//Moved from outside if statement as shipping coupon no longer uses this code 
+			if expectedDiscount = actualDiscount then
+				LogSuccess "Discount of " & currency & actualDiscount & " displayed as expected"
+			else
+				LogError "Discount not displayed as expected. Expected discount on subtotal of " & currency & subtotal & " equals " & currency & expectedDiscount & ". Actual discount equals " & currency & actualDiscount
+			end if
+		else if couponType = "Shipping" then
+			if not ImageFound(3, "CheckoutTablet/t_Shipping") then
+				LogSuccess "'Shipping' removed from order details"
+			else 
+				LogError "'Shipping' still displayed but not expected"
+			end if
+			(* CODE CHANGE - RC 23/06/2017 - Changed code as shipping field no longer appears when voucher code applied
+			run Utils_Utilities.CheckForImage "CheckoutTablet/t_Shipping", "'Shipping' text"
+			run Utils_Utilities.CheckOrderValues "CheckoutTablet/t_Shipping"
+			set actualDiscount to the result
+			set expectedDiscount to 0.00*)
+			
+		else
+			LogError "Coupon type of '" & couponType & "' not recognised"
+		end if
+		(* CODE CHANGE - RC 23/06/2017 - Moved section into if statement for Shopping as shipping no longer uses this code
+		//check that our expected and actual values match 
+		if expectedDiscount = actualDiscount then
+			LogSuccess "Discount of " & currency & actualDiscount & " displayed as expected"
+		else
+			LogError "Discount not displayed as expected. Expected discount on subtotal of " & currency & subtotal & " equals " & currency & expectedDiscount & ". Actual discount equals " & currency & actualDiscount
+		end if*)
+	end if
+	
+	run Utils_Utilities.SetElementState "Checkbox", subscribe, "CheckoutTablet/cb_SubscribeToOurNewsletter/cb_SubscribeToOurNewsletterSelected", "CheckoutTablet/cb_SubscribeToOurNewsletter/cb_SubscribeToOurNewsletterUnselected"
+	run Utils_Utilities.SetElementState "Radio button", receiveOffers, "CheckoutTablet/cb_ReceiveOffers/cb_ReceiveOffersSelected", "CheckoutTablet/cb_ReceiveOffers/cb_ReceiveOffersUnselected"
+	Stop using Omega13
+end CouponCodeTablet
+
+(*
+Function - CouponCodeMobile
+Author - Rory Cruickshank
+Date - 20/06/2017
+Purpose - Input any coupons 
+Arguments - couponCode, couponType, currency
+Returns - 
+*)
+to CouponCodeMobile couponCode, couponType, currency, loggedIn
+	Start using Omega13
+	//Check if we need to handle the coupon code
+	if couponCode.length > 0 then
+		run Utils_Utilities.ScrollUntilFound "Down", "CheckoutMobile/tb_DiscountCode", "Discount code textbox", 5, "Log", , , ,
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_DiscountCode", couponCode, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "CheckoutMobile/bt_UseDiscountCode"
+		if couponType = "Shipping" then
+			run Utils_Utilities.CheckForImage "CheckoutMobile/t_DeliveryCode"
+		else if couponType = "Shopping" then
+			//Ensure that we can see the full order
+			if loggedIn = "No" then
+				run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/t_HowWouldYouLikeToPayHeader", "'How would you like to pay' header", 5, "Log", , , ,
+			else if loggedIn = "Yes" then
+				run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/t_PaymentAddressHeader", "'Payment Address' header", 5, "Log", , , ,
+			else 
+				LogError "Value for loggedIn not recognised. Expected 'Yes' or 'No', but actual value: " & loggedIn
+			end if
+			//Now check that the discount has been applied
+			run Utils_Utilities.CheckForImage "CheckoutMobile/t_Subtotal", "'Subtotal' text"
+			run Utils_Utilities.CheckOrderValues "CheckoutMobile/t_Subtotal"
+			set subtotal to the result
+			set expectedDiscount to subtotal/5
+			run Utils_Utilities.CheckOrderValues "CheckoutMobile/t_Discount"
+			set actualDiscount to the result
+			//Moved from outside if statement as shipping coupon no longer uses this code 
+			if expectedDiscount = actualDiscount then
+				LogSuccess "Discount of " & currency & actualDiscount & " displayed as expected"
+			else
+				LogError "Discount not displayed as expected. Expected discount on subtotal of " & currency & subtotal & " equals " & currency & expectedDiscount & ". Actual discount equals " & currency & actualDiscount
+			end if
+		else
+			LogError "Coupon type of '" & couponType & "' not recognised"
+		end if
+	end if
+	Stop using Omega13
+end CouponCodeMobile
+
+(*
+Function - PlaceOrderTablet
+Author - Rory Cruickshank
+Date - 09/06/2017
+Purpose - Hit the Place Order button and check for confirmation
+Arguments - 
+Returns - 
+*)
+to PlaceOrderTablet paymentType, cardNumber, expiryMonth, expiryYear, securityCode, cardholderName, email, password, savePassword
+	Start using Omega13
+	//Ensure that we're able to see the Place Order button
+	run Utils_Utilities.ScrollUntilFound "Up", "CheckoutTablet/bt_PlaceOrder", "'Place Order' button", 5, "Log", , , ,
+	
+	//Check which payment type we need to execute
+	if paymentType = "Pay by Credit or Debit Card" then
+		//Wait for the payment details screen to appear
+		run Utils_Utilities.CheckForImage("CheckoutTablet/tb_CardholderName")
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_CardholderName", cardholderName, "iOSKeyboard/SafariCloseKeyboard"
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_CardNumber", cardNumber, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "CheckoutTablet/lb_ExpiryDateMonth"
+		run Utils_Utilities.SelectFromDropdown "iPad", expiryMonth, 12, "Up", 326, 67, 964, 1790
+		Tap "CheckoutTablet/lb_ExpiryDateYear"
+		run Utils_Utilities.SelectFromDropdown "iPad", expiryYear, 2030, "Up", 427, 67, 964, 1790
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutTablet/tb_SecurityCode", securityCode, "iOSKeyboard/SafariCloseKeyboard"
+	end if
+	//Tap the 'Place Order' button
+	Tap "CheckoutTablet/bt_PlaceOrder"
+	//Check if we are being asked to save a password
+	if ImageFound(5, "iOSPasswordOptions") then
+		if savePassword = "Save" then
+			Tap "iOSPasswordOptions/bt_SavePassword"
+		else if savePassword = "Never" then
+			Tap iOSPasswordOptions/bt_NeverForThisSite
+		else if savePassword = "Not Now" then
+			Tap "iOSPasswordOptions/bt_NotNow"
+		else
+			Log "Password option not given or not recognised.'Not Now' selected by default"
+			Tap "iOSPasswordOptions/bt_NotNow"
+		end if
+	end if
+	if paymentType = "Paypal" then
+		//Wait for the login screen to appear
+		run Utils_Utilities.CheckForImage"PayPalTablet/t_LogInToPayPalHeader", "'Log In To PayPal' header"
+		//Ensure that the email address has not auto-populated
+		DoubleClick "PayPalTablet/tb_EmailAddress"
+		Tap "iOSKeyboard/bt_SelectAll"
+		Tap "iOSKeyboard/bt_Delete"
+		run Utils_Utilities.TypeAndCloseKeyboard "PayPalTablet/tb_EmailAddress", email, "iOSKeyboard/SafariCloseKeyboard"
+		run Utils_Utilities.TypeAndCloseKeyboard "PayPalTablet/tb_Password", password, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "PayPalMobile/bt_Login"
+		//Check when we get to the next screen
+		if ImageFound(30, "PayPalTablet/bt_Continue") then
+			Tap "PayPalTablet/bt_Continue"
+		end if
+	end if
+	
+	//Finally, check that we have reached the 'Your order has been received' page
+	if ImageFound(30, "CheckoutTablet/t_YourOrderHasBeenReceivedHeader") then
+		LogSuccess "'Your order has been received' message displayed as expected"
+	end if
+	Stop using Omega13
+end PlaceOrderTablet
+
+(*
+Function - PlaceOrderMobile
+Author - Rory Cruickshank
+Date - 20/06/2017
+Purpose - Hit the Place Order button and check for confirmation
+Arguments - 
+Returns - 
+*)
+to PlaceOrderMobile paymentType, cardNumber, expiryMonth, expiryYear, securityCode, cardholderName, email, password
+	Start using Omega13
+	//Check which payment type we need to execute
+	if paymentType = "Pay by Credit or Debit Card" then
+		//Wait for the payment details screen to appear
+		run Utils_Utilities.CheckForImage("CheckoutMobile/tb_CardholderName")
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_CardholderName", cardholderName, "iOSKeyboard/SafariCloseKeyboard"
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_CardNumber", cardNumber, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "CheckoutMobile/lb_ExpiryYear"
+		run Utils_Utilities.SelectFromDropdown "iPhone", expiryYear, 2030, "Up", 2, 814, 750, 1334
+		Tap "CheckoutMobile/lb_ExpiryMonth"
+		run Utils_Utilities.SelectFromDropdown "iPhone", expiryMonth, "12 - Dec", "Up", 2, 814, 750, 1334
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_SecurityCode", securityCode, "iOSKeyboard/SafariCloseKeyboard"
+		//Tap the 'Place Order' button
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/bt_PlaceOrder", "'Place Order' button", 5, "Tap", , , ,
+	else if paymentType = "Paypal" then
+		Tap "CheckoutMobile/bt_PlaceOrderWithPaypal"
+		//Wait for the login screen to appear
+		run Utils_Utilities.CheckForImage"PayPalMobile/t_LogIntoPayPalHeader", "'Log In To PayPal' header"
+		run Utils_Utilities.TypeAndCloseKeyboard "PayPalMobile/tb_Password", password, "iOSKeyboard/SafariCloseKeyboard"
+		//Ensure that the email address has not auto-populated
+		DoubleClick "PayPalMobile/tb_EmailAddress"
+		if ImageFound(5, "iOSKeyboard/bt_SelectAll") then
+			Tap "iOSKeyboard/bt_SelectAll"
+			Tap "iOSKeyboard/bt_Delete"			
+		end if
+		//TypeText commandKey, "l"
+		run Utils_Utilities.TypeAndCloseKeyboard "PayPalMobile/tb_EmailAddress", email, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "PayPalMobile/bt_Login"
+		//Check when we get to the next screen
+		if ImageFound(30, "PayPalMobile/bt_Continue") then
+			Tap "PayPalMobile/bt_Continue"
+		end if
+		else if paymentType = "Not required" then
+		//Only need to click the 'Place Order' button
+		run Utils_Utilities.ScrollUntilFound "Up", "CheckoutMobile/bt_PlaceOrder", "'Place Order' button", 5, "Tap", , , ,
+		else
+		LogWarning "Payment method '" & paymentType & "' does not match any known options"
+	end if
+	
+	//Finally, check that we have reached the 'Your order number' page
+	if ImageFound(30, "CheckoutMobile/t_YourOrderNumberHeader") then
+		LogSuccess "'Your order number' message displayed as expected"
+	else
+		LogError "'Your order number' message not displayed as expected"
+		CaptureScreen (Name: "Your Order Number")
+	end if
+	Stop using Omega13
+end PlaceOrderMobile
+
+
+(*
+Function - ContinueAsGuestMobile
+Author - Rory Cruickshank
+Date - 12/06/2017
+Purpose - Input details and continue as a guest
+Arguments - firstName, lastName, email
+Returns - 
+*)
+to ContinueAsGuestMobile firstName, lastName, email
+	Start using Omega13
+	if email.length > 0 then
+		//First ensure that we are on the correct tab
+		run Utils_Utilities.CheckForImage "CheckoutMobile/tm_NoImNewHere", "'No I'm new here' tab"
+		//Make sure that 'No I'm new here' is selected
+		run Utils_Utilities.SetElementState "Tab menu", "Yes", "CheckoutMobile/tm_NoImNewHere/tm_NoImNewHereSelected", "CheckoutMobile/tm_NoImNewHere/tm_NoImNewHereUnselected"
+	else
+		run Utils_Utilities.ScrollUntilFound "Down", "CheckoutMobile/t_AddANewAddressHeader", "'Add a new address' header", 5, "Log",
+	end if
+	
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_FirstName", firstName, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_LastName", lastName, "iOSKeyboard/SafariCloseKeyboard"	
+	//Chgeck if we're adding an email address
+	if email.length > 0 then
+		run Utils_Utilities.TypeAndCloseKeyboard "CheckoutMobile/tb_EmailAddress", email, "iOSKeyboard/SafariCloseKeyboard"
+		Tap "CheckoutMobile/bt_ContinueAsGuest"
+	end if
+	Stop using Omega13
+end ContinueAsGuestMobile

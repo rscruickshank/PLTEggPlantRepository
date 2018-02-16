@@ -1,0 +1,15 @@
+﻿(*
+Function - attemptRecovery
+Author - Rory Cruickshank
+Date - 20/07/2017
+Purpose - Handle images beingunavailable due to common errors, such as cookie warnings
+Arguments - 
+Returns - 
+*)
+if ImageFound(0.5, "ErrorCauses/t_NginxErrorHeader") then
+	LogWarning "Nginx page not found error message displayed. Refreshing page to recover"
+	Click "ErrorCauses/bt_RefreshPage"
+else if ImageFound(0.1, "ErrorCauses/bt_AcceptCookies") then
+	Click "ErrorCauses/bt_AcceptCookies"
+end if
+Return Yes

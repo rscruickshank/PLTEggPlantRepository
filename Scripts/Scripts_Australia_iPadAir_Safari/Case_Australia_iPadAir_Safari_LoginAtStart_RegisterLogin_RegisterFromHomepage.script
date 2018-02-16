@@ -1,0 +1,23 @@
+﻿(*
+Function - Case_Australia_iPadAir_Safari_LoginAtStart_RegisterLogin_RegisterFromHomepage
+Author - Rory Cruickshank
+Date - 03/07/2017
+Purpose - Load the homepage and register a new user
+Arguments - 
+Returns - 
+*)
+
+//Initialise our unique number variable
+put the seconds into uniqueNumber
+
+//Start by clearing our browser and loading our homepage
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"
+run Mthds_PageLoad.DevicePageLoad "Safari", "Tablet", "Australia"
+
+//Navigate to the Register page and check that it has been found
+run Utils_Utilities.CheckForImage "NavBarTablet/lk_Register", "Register link"
+Click "NavBarTablet/lk_Register"
+run Mthds_RegisterPage.RegistrationPageTablet "iPad", "Barbara", "Wright", "12", "November", "2005", "Yes", "01234567890", "Australia", "M407FS", "No", "Wellington House", "Pollard Street East", "MANCHESTER", "Yes", uniqueNumber & "test@email.com", "P@ssw0rd", "P@ssw0rd", "New South Wales"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPadAir"

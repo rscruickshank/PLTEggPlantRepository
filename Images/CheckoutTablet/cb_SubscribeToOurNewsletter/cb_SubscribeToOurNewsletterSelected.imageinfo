@@ -1,0 +1,21 @@
+﻿{
+    CaptureDate = "2017-06-07 14:09:06 +0000";
+    CaptureHost = "Edin iPad Air";
+    CaptureScreenSize =     (
+        1536,
+        2048
+    );
+    CropRectangle = "4,4,392,53";
+    HasAlpha = 1;
+    HotSpotX = 198;
+    HotSpotY = 28;
+    ImageDescription = <>;
+    LastKnownLocationX = 0;
+    LastKnownLocationY = 0;
+    OriginalLocationX = 1038;
+    OriginalLocationY = 1092;
+    Precise = 0;
+    Pulsing = 0;
+    Scale = 1;
+    SearchAlgorithm = TextSmoothSquare;
+}

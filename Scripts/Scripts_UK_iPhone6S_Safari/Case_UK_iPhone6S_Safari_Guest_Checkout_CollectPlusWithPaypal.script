@@ -1,0 +1,35 @@
+﻿(*
+Function - Case_UK_iPhone6S_Safari_Guest_Checkout_CollectPlusWithPaypal
+Author - Rory Cruickshank
+Date - 20/06/2017
+Purpose - Add items to the shopping bag, select Collect+ delivery, then checkout using paypal
+Arguments - numberOfItems
+Returns - 
+*)
+
+//Set our variables
+Set numberOfItems to 0
+put the seconds into uniqueNumber
+
+//Start by loading our homepage
+run Mthds_PageLoad.DevicePageLoad "Safari", "Mobile"
+//Navigate to Beauty and add an item
+run Mthds_PageNavigation.NavigateToNewPage "Tablet", "NavBarTablet/lk_Accessories", "NavBarAccessoriesTablet/lk_Beauty", "NavigationLandingPagesTablet/t_BeautyAccessoriesHeader", "Beauty Accessories header"
+run Mthds_AddAnItem.AddAnItem "Tablet", , , numberOfItems
+//Navigate to shopping bag and then checkout
+Tap "NavBarMobile/lk_Basket"
+If ImageFound(15, "ShoppingBagMobile/bt_ProceedToCheckout") then
+	Tap "ShoppingBagMobile/bt_ProceedToCheckout"
+else
+	LogError "'Proceed to checkout' button not displayed"
+end if
+put the seconds into uniqueNumber
+run Mthds_Checkout.ContinueAsGuestMobile "Bruce", "Wayne", uniqueNumber & "test@email.com"
+run Mthds_Checkout.EnterAddressMobile "iPhone", "01234567890", "23", "November", "2005", "United Kingdom", "M407FS", "Yes", "Wellington House", "Pollard Street East", "MANCHESTER", "Yes"
+run Mthds_Checkout.DeliveryMethodMobile "Collect Plus", "Yes", "No"
+run Mthds_Checkout.CouponCodeMobile ""
+run Mthds_Checkout.PaymentMethodMobile "Paypal"
+run Mthds_Checkout.PlaceOrderMobile "Paypal", "", "", "", "", "", "asif_ali36-buyer@hotmail.com", "classic123"
+
+//Finally, close our browser again
+run Mthds_TearDown.DeviceTearDown "iOS", "iPhone6S"

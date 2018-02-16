@@ -1,0 +1,50 @@
+﻿(*
+Function - LoginPageTablet
+Author - Rory Cruickshank
+Date - 22/06/2017
+Purpose - Handle expected elements on all sections of the Login page
+Arguments - emailAddress, password
+Returns - 
+*)
+to LoginPageTablet emailAddress, password, page
+	Start using Omega13
+	//Check that we are on the correct page
+	run Utils_Utilities.CheckForImage "LoginPage/t_LoginHeader", "Login page header"
+	//Input the email and password then click 'Sign in'
+	run Utils_Utilities.TypeAndCloseKeyboard "LoginPage/tb_Password", password, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "LoginPage/tb_EmailAddress", emailAddress, "iOSKeyboard/SafariCloseKeyboard"
+	Tap "LoginPage/bt_SignIn"
+	//Check if the password options popup appears
+	if ImageFound(5, "iOSPasswordOptions/bt_NeverForThisSite") then
+		Tap "iOSPasswordOptions/bt_NeverForThisSite"
+	end if
+	//Check which page we're expecting to see
+	if page = "Login Page" then
+		//Check for the logged in text
+		run Utils_Utilities.CheckForImage "RegisterPageTablet/t_WelcomeText", "Welcome text"
+	else if page = "Checkout" then
+		//Wait for the checkout page to reappear
+		run Utils_Utilities.CheckForImage "CheckoutTablet/t_CheckoutHeader", "Checkout header"
+	end if
+	Stop using Omega13
+end LoginPageTablet
+
+(*
+Function - LoginPageMobile
+Author - Rory Cruickshank
+Date - 27/06/2017
+Purpose - Handle expected elements on all sections of the Login page
+Arguments - emailAddress, password
+Returns - 
+*)
+to LoginPageMobile emailAddress, password
+	Start using Omega13
+	//Check that we are on the correct page
+	run Utils_Utilities.CheckForImage "LoginPage/t_MobileLoginHeader", "Login page header"
+	run Utils_Utilities.SetElementState "Tab", "Yes", "LoginPage/tm_YesIHaveAnAccount/tm_YesIHaveAnAccountSelected", "LoginPage/tm_YesIHaveAnAccount/tm_YesIHaveAnAccountUnselected"
+	//Input the email and password then click 'Sign in'
+	run Utils_Utilities.TypeAndCloseKeyboard "LoginPage/tb_MobilePassword", password, "iOSKeyboard/SafariCloseKeyboard"
+	run Utils_Utilities.TypeAndCloseKeyboard "LoginPage/tb_MobileEmailAddress", emailAddress, "iOSKeyboard/SafariCloseKeyboard"
+	Tap "LoginPage/bt_Login"
+	Stop using Omega13
+end LoginPageMobile

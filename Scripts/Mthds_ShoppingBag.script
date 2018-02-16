@@ -1,0 +1,97 @@
+﻿(*
+Function - IncreaseOrDecreaseItemsMobile
+Author - Rory Cruickshank
+Date - 02/06/2017
+Purpose - Increase or decrease the number of items in the shopping bag
+Arguments - numberOfItems, action, itemToAmend, numberRemoved
+Returns - 
+*)
+to IncreaseOrDecreaseItemsMobile numberOfItems, action, itemToAmend, numberRemoved
+	Start using Omega13
+	//Check the number of items is correctly displayed
+	run Utils_Utilities.CheckForInputValue "Shopping bag items:", numberOfItems, "ShoppingBagMobile/r_TotalItems_A", "ShoppingBagMobile/r_TotalItems_B", "FontAwesome-webfont"
+	//Check which item to amend and set the search rectangle accordingly
+	if itemToAmend = "First Item" then
+		run Utils_Utilities.ScrollUntilFound "Down", "ShoppingBagMobile/t_YourBagHeader", "Your Bag header", 5, "Log"
+		Set the SearchRectangle to (36, 476, 721, 804)
+	else if itemToAmend = "Second Item" then
+		run Utils_Utilities.ScrollUntilFound "Up", "ShoppingBagMobile/bt_UseCode", "Use Code button", 5, "Log"
+		Set the SearchRectangle to (21, 105, 702, 605)
+	end if
+	//Now check which action to take
+	if action = "Increase" then
+		//Click the increase button and add one to numberOfItems
+		Tap "ShoppingBagMobile/bt_Increase"
+		Set numberOfItems to numberOfItems +1
+		else if action = "Decrease" then
+		//Click the decrease button and subrtract one from numberOfItems
+		Tap "ShoppingBagMobile/bt_Decrease"
+		Set numberOfItems to numberOfItems -1
+		else if action = "Remove" then
+		//Click the decrease button and subrtract numberRemoved from numberOfItems
+		Tap "ShoppingBagMobile/bt_Remove"
+		//Need to unset the search rectangle to click the confirm button
+		Set the SearchRectangle to ()
+		Tap "ShoppingBagMobile/bt_ConfirmRemove"
+		Set numberOfItems to numberOfItems -numberRemoved
+	end if
+	//Unset the search rectangle
+	Set the SearchRectangle to ()
+	//Check the number of items is correctly displayed
+	run Utils_Utilities.ScrollUntilFound "Down", "ShoppingBagMobile/t_YourBagHeader", "Your Bag header", 5, "Log"
+	run Utils_Utilities.CheckForInputValue "Shopping bag items:", numberOfItems, "ShoppingBagMobile/r_TotalItems_A", "ShoppingBagMobile/r_TotalItems_B", "FontAwesome-webfont"
+	Stop using Omega13
+	return numberOfItems
+end IncreaseOrDecreaseItemsMobile
+
+(*
+Function - IncreaseOrDecreaseItems
+Author - Rory Cruickshank
+Date - 02/06/2017
+Purpose - Increase or decrease the number of items in the shopping bag
+Arguments - numberOfItems, increaseOrDecrease
+Returns - 
+*)
+to IncreaseOrDecreaseItemsTablet numberOfItems, action, itemToAmend, numberRemoved
+	Start using Omega13
+	//Wait to update with the correct number of items
+	Wait 5
+	//Check the number of items is correctly displayed
+	run Utils_Utilities.CheckShoppingBag "NavBarTablet/lk_Basket/lk_iPadBasket", numberOfItems
+	//Check which item to amend and set the search rectangle accordingly
+	if itemToAmend = "First Item" then
+		run Utils_Utilities.ScrollUntilFound "Down", "ShoppingBagTablet/t_YourBagHeader", "Your Bag header", 5, "Log"
+		Set the SearchRectangle to (65, 962, 1086, 1402)
+	else if itemToAmend = "Second Item" then
+		run Utils_Utilities.ScrollUntilFound "Up", "ShoppingBagTablet/t_Subtotal", "Use Code button", 5, "Log"
+		Set the SearchRectangle to (41, 1436, 1335, 1975)
+	else
+		LogError "Requested item to amend not recognised. Requested: " & itemToAmend
+	end if
+	//Now check which action to take
+	if action = "Increase" then
+		//Click the increase button and add one to numberOfItems
+		Tap "ShoppingBagTablet/bt_Increase"
+		Tap "ShoppingBagTablet/bt_Update"
+		Set numberOfItems to numberOfItems +1
+	else if action = "Decrease" then
+		//Click the decrease button and subtract one from numberOfItems
+		Tap "ShoppingBagTablet/bt_Decrease"
+		Tap "ShoppingBagTablet/bt_Update"
+		Set numberOfItems to numberOfItems -1
+	else if action = "Remove" then
+		//Click the remove button and subtract numberRemoved from numberOfItems
+		Tap "ShoppingBagTablet/bt_Remove"
+		Set numberOfItems to numberOfItems -numberRemoved
+	else
+		LogError "Requested action not recognised. Requested: " & action
+	end if
+	//Unset the search rectangle
+	Set the SearchRectangle to ()
+	//Wait to allow the page to update
+	Wait 5
+	//Check the number of items is correctly displayed
+	run Utils_Utilities.CheckShoppingBag "NavBarTablet/lk_Basket/lk_iPadBasket", numberOfItems
+	Stop using Omega13
+	return numberOfItems
+end IncreaseOrDecreaseItemsTablet
